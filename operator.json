@@ -1,7 +1,7 @@
 {
   "name": "fcs",
   "description": "Transform fcs files to tercen dataset. Flow Cytometry Standard is a data file standard for the reading and writing of data from flow cytometry experiments.",
-  "tags": ["importer"],
+  "tags": ["import"],
   "authors": ["tercen"],
   "urls": ["https://github.com/tercen/fcs_operator"],
   "properties": []
