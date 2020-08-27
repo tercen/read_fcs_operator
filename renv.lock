@@ -29,7 +29,7 @@
     ]
   },
   "Bioconductor": {
-    "Version": "Bioconductor version cannot be validated; no internet connection?"
+    "Version": "3.8"
   },
   "Packages": {
     "BH": {
@@ -50,6 +50,13 @@
       "Version": "0.28.0",
       "Source": "Bioconductor",
       "Hash": "6e2b945d12e9e01cb0602ce6fbfb8841"
+    },
+    "BiocManager": {
+      "Package": "BiocManager",
+      "Version": "1.30.10",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "db75371846625725e221470b310da1d5"
     },
     "DEoptimR": {
       "Package": "DEoptimR",
