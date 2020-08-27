@@ -29,7 +29,7 @@
     ]
   },
   "Bioconductor": {
-    "Version": "3.8"
+    "Version": "Bioconductor version cannot be validated; no internet connection?"
   },
   "Packages": {
     "BH": {
@@ -261,17 +261,17 @@
     },
     "teRcenHttp": {
       "Package": "teRcenHttp",
-      "Version": "1.0.14",
+      "Version": "1.0.15",
       "Source": "Repository",
       "Repository": "TERCEN",
-      "Hash": "5ed131ec0d0917f1a2b013e9ac44fee7"
+      "Hash": "84489e43110d07e38b7946e7c10bd87b"
     },
     "tercen": {
       "Package": "tercen",
-      "Version": "0.9.5",
+      "Version": "0.10.0",
       "Source": "Repository",
       "Repository": "TERCEN",
-      "Hash": "6b8359f6781e2a0d9d0feb184930e72e"
+      "Hash": "486247d016492edb81d8bb1c884cfeac"
     },
     "tibble": {
       "Package": "tibble",
