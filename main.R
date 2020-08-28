@@ -9,8 +9,10 @@ library(flowCore)
 # options("tercen.stepId"= "91c7e052-54e6-49b8-bf2c-09f55c5762e3")
  
 doc_to_data = function(df){
+  docId = df$documentId[1]
+  doc = ctx$client$fileService$get(docId)
   filename = tempfile()
-  writeBin(ctx$client$fileService$download(df$documentId[1]), filename)
+  writeBin(ctx$client$fileService$download(docId), filename)
   on.exit(unlink(filename))
   data_fcs = read.FCS(filename, transformation = FALSE)
   names_parameters = data_fcs@parameters@data$desc
@@ -22,7 +24,8 @@ doc_to_data = function(df){
   data %>%
     mutate_if(is.logical, as.character) %>%
     mutate_if(is.integer, as.double) %>%
-    mutate(.ci= rep_len(df$.ci[1], nrow(.)))
+    mutate(.ci= rep_len(df$.ci[1], nrow(.))) %>%
+    mutate(filename= rep_len(doc$name, nrow(.)))
 }
 
 ctx = tercenCtx()
