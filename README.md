@@ -1,7 +1,8 @@
-# FCS operator
+# Read FCS operator
 
 ##### Description
-Transform fcs files to tercen dataset.
+
+`read_fcs` operator transforms FCS files to Tercen datasets.
 
 ##### Usage
 
@@ -14,14 +15,7 @@ Output relations|.
 `documentId`          | character, the id of the document
 
 ##### Details
-Transform fcs files to tercen dataset. 
 
-Flow Cytometry Standard is a data file standard for the reading and writing of data from flow cytometry experiments.
+Transforms FCS files to Tercen dataset. 
 
-#### References
-
-
-##### See Also
-
-
-#### Examples
+The Flow Cytometry Standard is a data file standard for the reading and writing of data from flow cytometry experiments.
