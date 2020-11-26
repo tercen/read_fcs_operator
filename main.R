@@ -1,9 +1,9 @@
+library(BiocManager)
 library(tercen)
 library(dplyr)
 library(flowCore)
+# library(Biobase)
 
-# http://localhost:53322/index.html#/alex/w/e11cea9d1119c8e6dbb0842925032c6e/ds/91c7e052-54e6-49b8-bf2c-09f55c5762e3
-# options("tercen.serviceUri"="http://172.17.0.1:5400/api/v1/") 
 # options("tercen.workflowId"= "132ff39e2530caca083900267b00283f")
 # options("tercen.stepId"= "124f89fc-f3b3-4ebd-9abc-3f26d3f0fe61")
 
