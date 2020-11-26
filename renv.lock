@@ -51,6 +51,13 @@
       "Source": "Bioconductor",
       "Hash": "6e2b945d12e9e01cb0602ce6fbfb8841"
     },
+    "BiocManager": {
+      "Package": "BiocManager",
+      "Version": "1.30.10",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "db75371846625725e221470b310da1d5"
+    },
     "DEoptimR": {
       "Package": "DEoptimR",
       "Version": "1.0-8",
@@ -233,10 +240,10 @@
     },
     "renv": {
       "Package": "renv",
-      "Version": "0.9.2",
+      "Version": "0.12.3",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "5181d5f316c7a6589219866d640e004c"
+      "Hash": "b5510c50c7f31d453c385c7b460af2b9"
     },
     "rlang": {
       "Package": "rlang",
