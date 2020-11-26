@@ -58,6 +58,13 @@
       "Repository": "CRAN",
       "Hash": "4fdd17df6c1b897cb59bdd9cf6621a43"
     },
+    "MASS": {
+      "Package": "MASS",
+      "Version": "7.3-51.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "c64a9edaef0658e36905934c5a7aa499"
+    },
     "R6": {
       "Package": "R6",
       "Version": "2.5.0",
@@ -130,9 +137,9 @@
     },
     "flowCore": {
       "Package": "flowCore",
-      "Version": "1.46.2",
+      "Version": "1.48.1",
       "Source": "Bioconductor",
-      "Hash": "f9ee5f0220b81e44f4432d9cbb706790"
+      "Hash": "c8c5e49a6c2f45be08c55a66cc45ca2a"
     },
     "generics": {
       "Package": "generics",
