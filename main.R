@@ -1,4 +1,3 @@
-library(BiocManager)
 library(tercen)
 library(dplyr)
 library(flowCore)

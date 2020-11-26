@@ -51,13 +51,6 @@
       "Source": "Bioconductor",
       "Hash": "6e2b945d12e9e01cb0602ce6fbfb8841"
     },
-    "BiocManager": {
-      "Package": "BiocManager",
-      "Version": "1.30.4",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "518d22c7de7502e73c6c482bf794905b"
-    },
     "DEoptimR": {
       "Package": "DEoptimR",
       "Version": "1.0-8",
