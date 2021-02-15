@@ -7,10 +7,18 @@ library(flowCore)
 
 # filename = '~/projects/test.fcs'
 # data_fcs = read.FCS(filename, transformation = FALSE)
-
-# options("tercen.workflowId"= "132ff39e2530caca083900267b00283f")
-# options("tercen.stepId"= "124f89fc-f3b3-4ebd-9abc-3f26d3f0fe61")
-
+# options("tercen.workflowId"= "1442fa719e5ff43509a9b5ac430030d6")
+# options("tercen.stepId"= "af753d0a-c294-4965-acba-e9a1a99821ce")
+# 
+# ctx = tercenCtx()
+# docId = '1442fa719e5ff43509a9b5ac43001848'
+# doc = ctx$client$fileService$get(docId)
+# filename = doc$name
+# data = ctx$client$fileService$download(docId)
+# writeBin(data, filename)
+# writeBin(ctx$client$fileService$download(docId), filename)
+# 
+# fds_to_data(filename)
  
 fds_to_data = function(filename) {
   
