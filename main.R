@@ -4,9 +4,14 @@ library(dplyr)
 library(flowCore)
 # library(Biobase)
 
+
+# filename = '~/projects/test.fcs'
+# data_fcs = read.FCS(filename, transformation = FALSE)
+
 # options("tercen.workflowId"= "132ff39e2530caca083900267b00283f")
 # options("tercen.stepId"= "124f89fc-f3b3-4ebd-9abc-3f26d3f0fe61")
 
+ 
 fds_to_data = function(filename) {
   
   data_fcs = read.FCS(filename, transformation = FALSE)
