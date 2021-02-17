@@ -296,10 +296,10 @@
     },
     "tercen": {
       "Package": "tercen",
-      "Version": "0.10.3",
+      "Version": "0.10.4",
       "Source": "Repository",
       "Repository": "TERCEN",
-      "Hash": "43b40c44514ed197df39e29097f5b192"
+      "Hash": "fc44198d844d20d01bf95d0b8477eb83"
     },
     "tibble": {
       "Package": "tibble",
