@@ -2,34 +2,8 @@ library(BiocManager)
 library(tercen)
 library(dplyr)
 library(flowCore)
-# library(Biobase)
 
-# getOption("tercen.serviceUri")
-# getOption("tercen.username")
-# getOption("tercen.password")
-# 
-# options("tercen.username"="alex")
-# options("tercen.password"="aa")
- 
-# filename = '~/projects/test.fcs'
-# data_fcs = read.FCS(filename, transformation = FALSE)
-# http://127.0.0.1:5400/alex/w/8651421aa0d724a578ae9faa1e01c74d/ds/ebda5081-aae4-45fc-b91b-f7b4b19d402a
-# options("tercen.serviceUri"="http://172.17.0.1:5400/api/v1/")
-# options("tercen.workflowId"= "8651421aa0d724a578ae9faa1e01c74d")
-# options("tercen.stepId"= "ebda5081-aae4-45fc-b91b-f7b4b19d402a")
-
-# ctx = tercenCtx()
-# docId = '1442fa719e5ff43509a9b5ac43001848'
-# doc = ctx$client$fileService$get(docId)
-# filename = doc$name
-# data = ctx$client$fileService$download(docId)
-# writeBin(data, filename)
-# writeBin(ctx$client$fileService$download(docId), filename)
-# 
-# fds_to_data(filename)
- 
 fds_to_data = function(filename) {
-  
   data_fcs = read.FCS(filename, transformation = FALSE)
   names_parameters = data_fcs@parameters@data$desc
   data = as.data.frame(exprs(data_fcs))

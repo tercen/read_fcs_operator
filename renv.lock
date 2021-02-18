@@ -109,10 +109,10 @@
     },
     "cli": {
       "Package": "cli",
-      "Version": "2.0.1",
+      "Version": "2.3.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "5173d8ab28680cf263636b110f4f3220"
+      "Hash": "26fb4f0871c8e5b84d77f6dc22f2ee0a"
     },
     "corpcor": {
       "Package": "corpcor",
@@ -191,10 +191,10 @@
     },
     "matrixStats": {
       "Package": "matrixStats",
-      "Version": "0.57.0",
+      "Version": "0.58.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "7249fc52d19eab5af7a02925ab534d9c"
+      "Hash": "c318d148056e5bb8d7de79b0876f9ae6"
     },
     "mtercen": {
       "Package": "mtercen",
@@ -261,10 +261,10 @@
     },
     "rlang": {
       "Package": "rlang",
-      "Version": "0.4.2",
+      "Version": "0.4.10",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "ff31d958a041593f58ba04fc637d90dd"
+      "Hash": "599df23c40a4fce9c7b4764f28c37857"
     },
     "robustbase": {
       "Package": "robustbase",
@@ -296,10 +296,10 @@
     },
     "tercen": {
       "Package": "tercen",
-      "Version": "0.10.4",
+      "Version": "0.10.5",
       "Source": "Repository",
       "Repository": "TERCEN",
-      "Hash": "fc44198d844d20d01bf95d0b8477eb83"
+      "Hash": "bde9ca07db3458495dd2ff8fce9d976a"
     },
     "tibble": {
       "Package": "tibble",
