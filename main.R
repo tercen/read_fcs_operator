@@ -31,7 +31,7 @@ writeBin(ctx$client$fileService$download(docId), filename)
 on.exit(unlink(filename))
 
 # unzip if archive
-if(length(grep(".zip", filename)) > 0) {
+if(length(grep(".zip", doc$name)) > 0) {
   tmpdir <- tempfile()
   unzip(filename, exdir = tmpdir)
   f.names <- list.files(tmpdir, full.names = TRUE)
