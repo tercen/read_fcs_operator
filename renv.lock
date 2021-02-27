@@ -109,10 +109,10 @@
     },
     "cli": {
       "Package": "cli",
-      "Version": "2.3.0",
+      "Version": "2.0.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "26fb4f0871c8e5b84d77f6dc22f2ee0a"
+      "Hash": "5173d8ab28680cf263636b110f4f3220"
     },
     "corpcor": {
       "Package": "corpcor",
@@ -261,10 +261,10 @@
     },
     "rlang": {
       "Package": "rlang",
-      "Version": "0.4.10",
+      "Version": "0.4.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "599df23c40a4fce9c7b4764f28c37857"
+      "Hash": "ff31d958a041593f58ba04fc637d90dd"
     },
     "robustbase": {
       "Package": "robustbase",
@@ -289,17 +289,17 @@
     },
     "teRcenHttp": {
       "Package": "teRcenHttp",
-      "Version": "1.0.15",
+      "Version": "1.0.20",
       "Source": "Repository",
       "Repository": "TERCEN",
-      "Hash": "84489e43110d07e38b7946e7c10bd87b"
+      "Hash": "02b62dc94dfe91684830ac27b5021502"
     },
     "tercen": {
       "Package": "tercen",
-      "Version": "0.10.5",
+      "Version": "0.10.6",
       "Source": "Repository",
       "Repository": "TERCEN",
-      "Hash": "bde9ca07db3458495dd2ff8fce9d976a"
+      "Hash": "2917b071a905ee6f745c0b22db2f795e"
     },
     "tibble": {
       "Package": "tibble",

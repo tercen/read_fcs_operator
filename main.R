@@ -18,7 +18,7 @@ fds_to_data = function(filename) {
 }
 
 ctx = tercenCtx()
-
+ 
 if (!any(ctx$cnames == "documentId")) stop("Column factor documentId is required") 
 
 #1. extract files
@@ -26,7 +26,7 @@ df <- ctx$cselect()
 
 docId = df$documentId[1]
 doc = ctx$client$fileService$get(docId)
-filename = doc$name
+filename = tempfile()
 writeBin(ctx$client$fileService$download(docId), filename)
 on.exit(unlink(filename))
 
@@ -47,7 +47,7 @@ task = ctx$task
 
 
 #2. convert them to FDS files
-df <- f.names %>%
+f.names %>%
   lapply(function(filename){
     data = fds_to_data(filename)
     if (!is.null(task)) {
