@@ -109,10 +109,10 @@
     },
     "cli": {
       "Package": "cli",
-      "Version": "2.0.1",
+      "Version": "2.3.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "5173d8ab28680cf263636b110f4f3220"
+      "Hash": "26fb4f0871c8e5b84d77f6dc22f2ee0a"
     },
     "corpcor": {
       "Package": "corpcor",
@@ -261,10 +261,10 @@
     },
     "rlang": {
       "Package": "rlang",
-      "Version": "0.4.2",
+      "Version": "0.4.10",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "ff31d958a041593f58ba04fc637d90dd"
+      "Hash": "599df23c40a4fce9c7b4764f28c37857"
     },
     "robustbase": {
       "Package": "robustbase",
