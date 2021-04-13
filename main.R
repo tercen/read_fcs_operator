@@ -3,7 +3,7 @@ library(tercen)
 library(dplyr)
 library(flowCore)
 
-fds_to_data = function(filename) {
+fcs_to_data = function(filename) {
   data_fcs = read.FCS(filename, transformation = FALSE)
   names_parameters = data_fcs@parameters@data$desc
   data = as.data.frame(exprs(data_fcs))
@@ -46,10 +46,10 @@ assign("actual", 0, envir = .GlobalEnv)
 task = ctx$task
 
 
-#2. convert them to FDS files
+#2. convert them to FCS files
 f.names %>%
   lapply(function(filename){
-    data = fds_to_data(filename)
+    data = fcs_to_data(filename)
     if (!is.null(task)) {
       # task is null when run from RStudio
       actual = get("actual",  envir = .GlobalEnv) + 1
@@ -58,10 +58,10 @@ f.names %>%
       evt$taskId = task$id
       evt$total = length(f.names)
       evt$actual = actual
-      evt$message = paste0('processing FDS file ' , filename)
+      evt$message = paste0('processing FCS file ' , filename)
       ctx$client$eventService$sendChannel(task$channelId, evt)
     } else {
-      cat('processing FDS file ' , filename)
+      cat('processing FCS file ' , filename)
     }
     data
   }) %>%
