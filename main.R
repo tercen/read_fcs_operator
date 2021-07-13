@@ -22,7 +22,8 @@ ctx = tercenCtx()
  
 if (!any(ctx$cnames == "documentId")) stop("Column factor documentId is required")
 
-which.lines <- ifelse(ctx$op.value("which.lines")=="NULL", NULL, as.numeric(ctx$op.value("which.lines")))
+which.lines <- NULL
+if(!is.null(ctx$op.value('which.lines')) && !ctx$op.value('which.lines') == "NULL") which.lines <- as.integer(ctx$op.value('which.lines'))
 
 # extract files
 df <- ctx$cselect()
