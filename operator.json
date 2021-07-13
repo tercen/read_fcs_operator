@@ -4,7 +4,14 @@
   "tags": ["import", "flow cytometry"],
   "authors": ["tercen"],
   "urls": ["https://github.com/tercen/read_fcs_operator"],
-  "properties": []
+  "properties": [
+    {
+    "kind": "StringProperty",
+    "name": "which.lines",
+    "defaultValue": "NULL",
+    "description": "Numeric vector to specify the indices of the lines to be read. If NULL all the records are read, otherwise, a random sample of the size indicated by which.lines is read in"
+    }
+  ]
 }
 
 

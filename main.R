@@ -3,8 +3,9 @@ library(tercen)
 library(dplyr)
 library(flowCore)
 
-fcs_to_data = function(filename) {
-  data_fcs = read.FCS(filename, transformation = FALSE)
+
+fcs_to_data = function(filename, which.lines) {
+  data_fcs = read.FCS(filename, which.lines, transformation = FALSE)
   names_parameters = data_fcs@parameters@data$desc
   data = as.data.frame(exprs(data_fcs))
   col_names = colnames(data)
@@ -19,9 +20,11 @@ fcs_to_data = function(filename) {
 
 ctx = tercenCtx()
  
-if (!any(ctx$cnames == "documentId")) stop("Column factor documentId is required") 
+if (!any(ctx$cnames == "documentId")) stop("Column factor documentId is required")
 
-#1. extract files
+which.lines <- ifelse(ctx$op.value("which.lines")=="NULL", NULL, as.numeric(ctx$op.value("which.lines")))
+
+# extract files
 df <- ctx$cselect()
 
 docId = df$documentId[1]
@@ -46,10 +49,10 @@ assign("actual", 0, envir = .GlobalEnv)
 task = ctx$task
 
 
-#2. convert them to FCS files
+# convert them to FCS files
 f.names %>%
   lapply(function(filename){
-    data = fcs_to_data(filename)
+    data = fcs_to_data(filename, which.lines)
     if (!is.null(task)) {
       # task is null when run from RStudio
       actual = get("actual",  envir = .GlobalEnv) + 1
