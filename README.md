@@ -10,6 +10,10 @@ Input projection|.
 ---|---
 `documentId`        | is the documentId (document can be a single FCS file, or a zipped set of FCS files)
 
+Input parameters|.
+---|---
+`which.lines`        | numeric, indicates the number of lines to be read. If NULL all the records are read, otherwise, a random sample of the size indicated by which.lines is read in
+
 Output relations|.
 ---|---
 `filename`          | character, the name of the FCS file
