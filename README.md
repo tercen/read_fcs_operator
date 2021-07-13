@@ -17,6 +17,6 @@ Output relations|.
 
 ##### Details
 
-The operator transforms FCS files into Tercen dataset. If the document is a ZIP file containing a set of FCS files, the operator extracts the FCS files and tranforms them into Tercen datasets.
+The operator transforms FCS files into Tercen table. If the document is a ZIP file containing a set of FCS files, the operator extracts the FCS files and transforms them into Tercen table.
 
 The Flow Cytometry Standard is a data file standard for the reading and writing of data from flow cytometry experiments.
