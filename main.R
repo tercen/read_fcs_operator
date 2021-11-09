@@ -4,8 +4,8 @@ library(dplyr)
 library(flowCore)
 
 
-fcs_to_data = function(filename, which.lines) {
-  data_fcs = read.FCS(filename, which.lines, transformation = FALSE)
+fcs_to_data = function(filename, which.lines, alter.names) {
+  data_fcs = read.FCS(filename, which.lines, transformation = FALSE, alter.names)
   names_parameters = data_fcs@parameters@data$desc
   data = as.data.frame(exprs(data_fcs))
   col_names = colnames(data)
@@ -53,7 +53,7 @@ task = ctx$task
 # convert them to FCS files
 f.names %>%
   lapply(function(filename){
-    data = fcs_to_data(filename, which.lines)
+    data = fcs_to_data(filename, which.lines, as.logical(ctx$op.value('alter.names')))
     if (!is.null(task)) {
       # task is null when run from RStudio
       actual = get("actual",  envir = .GlobalEnv) + 1
