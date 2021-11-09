@@ -5,7 +5,10 @@ library(flowCore)
 
 
 fcs_to_data = function(filename, which.lines, alter.names) {
-  data_fcs = read.FCS(filename, which.lines, transformation = FALSE, alter.names)
+  data_fcs = read.FCS(filename, 
+                      which.lines = which.lines,
+                      transformation = FALSE, 
+                      alter.names = alter.names)
   names_parameters = data_fcs@parameters@data$desc
   data = as.data.frame(exprs(data_fcs))
   col_names = colnames(data)
