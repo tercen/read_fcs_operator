@@ -3,7 +3,6 @@ library(tercen)
 library(dplyr)
 library(flowCore)
 
-
 fcs_to_data = function(filename, which.lines, alter.names) {
   data_fcs = read.FCS(filename, 
                       which.lines = which.lines,
@@ -12,6 +11,10 @@ fcs_to_data = function(filename, which.lines, alter.names) {
   names_parameters = data_fcs@parameters@data$desc
   data = as.data.frame(exprs(data_fcs))
   col_names = colnames(data)
+  
+  # Column added late can have "<NA>" as a description without been detected as NA
+  names_parameters = ifelse(names_parameters == "<NA>",NA,names_parameters)
+  
   names_parameters = ifelse(is.na(names_parameters),col_names,names_parameters)
   colnames(data) = names_parameters
   data %>%
