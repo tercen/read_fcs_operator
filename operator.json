@@ -18,6 +18,17 @@
     "description": "A logical value indicating whether the custom compensation matrix should be use (Set to false if you do not want the application of the compensation or if you want to use an internal matrix)."
   },
     {
+    "kind": "EnumeratedProperty",
+    "name": "Separator",
+    "defaultValue": "Comma",
+    "description": "Type of the separator between values (if custom compensation matrix is provided)",
+	  "values": [
+      "Comma",
+      "semicolon",
+      "Tab"
+      ]
+  },
+    {
     "kind": "DoubleProperty",
     "name": "which.lines",
     "defaultValue": -1,
