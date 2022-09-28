@@ -54,10 +54,6 @@ read_fcs <- function(filename, use.comp, csv.comp, which.lines, separator) {
       stop("Different number of columns between FCS file and compensation matrix. Compensation cannot be applied.")
     }
     
-  } else {
-    
-    stop("Compensation was not applied.")
-    
   }
   
   data <- as.data.frame(exprs(data_fcs))
