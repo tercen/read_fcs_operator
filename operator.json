@@ -5,11 +5,23 @@
   "authors": ["tercen"],
   "urls": ["https://github.com/tercen/read_fcs_operator"],
   "properties": [
+   {
+    "kind": "BooleanProperty",
+    "name": "use.builtin.compensation",
+    "defaultValue": false,
+    "description": "A logical value indicating whether the built-in compensation matrix should be use (Set to false if you do not want the application of the built-in compensation or if you want to use an external matrix)."
+  },
+  {
+    "kind": "BooleanProperty",
+    "name": "use.custom.compensation",
+    "defaultValue": false,
+    "description": "A logical value indicating whether the custom compensation matrix should be use (Set to false if you do not want the application of the compensation or if you want to use an internal matrix)."
+  },
     {
-    "kind": "StringProperty",
+    "kind": "DoubleProperty",
     "name": "which.lines",
-    "defaultValue": "NULL",
-    "description": "Indicate the number of lines to be read. If NULL all the lines are read, otherwise, a random sample of the size indicated by which.lines is read in"
+    "defaultValue": -1,
+    "description": "Indicate the number of lines to be read. If -1, all rows are read, otherwise, a random sample of the size indicated by which.lines is read in"
     },
  {
     "kind": "BooleanProperty",
