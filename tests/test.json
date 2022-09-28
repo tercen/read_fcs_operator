@@ -6,7 +6,7 @@
     {
       "kind": "PropertyValue",
       "name": "which.lines",
-      "value": -1
+      "value": "-1"
     }
   ],
   "inputFileUris": ["fcs_test.zip"],
