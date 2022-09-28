@@ -65,7 +65,7 @@ read_fcs <- function(filename, use.comp, csv.comp, which.lines, separator) {
     mutate_if(is.logical, as.character) %>%
     mutate_if(is.integer, as.double) %>%
     mutate(.ci = as.integer(rep_len(0, nrow(.)))) %>%
-    mutate(dirname = rep_len(dirname(filename), nrow(.))) %>%
+    # mutate(dirname = rep_len(dirname(filename), nrow(.))) %>%
     mutate(filename = rep_len(basename(filename), nrow(.)))
   
   return(return.data)
