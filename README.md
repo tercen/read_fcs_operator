@@ -13,6 +13,8 @@ Input projection|.
 Input parameters|.
 ---|---
 `which.lines`        | numeric, indicates the number of lines to be read. If NULL all the records are read, otherwise, a random sample of the size indicated by which.lines is read in
+`use.builtin.compensation`        | A logical value indicating whether the built-in compensation matrix should be use (Set to false if you do not want the application of the built-in compensation or if you want to use an external matrix)
+`use.custom.compensation`        | A logical value indicating whether the custom compensation matrix should be use (Set to false if you do not want the application of the compensation or if you want to use an internal matrix).
 
 Output relations|.
 ---|---

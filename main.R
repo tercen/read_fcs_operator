@@ -8,12 +8,18 @@ read_fcs <- function(filename, use.comp, csv.comp, which.lines, separator) {
   data_fcs <- read.FCS(
     filename,
     transformation = FALSE,
-    which.lines = which.lines,
+    which.lines = NULL,
     dataset = 2,
     emptyValue = FALSE,
     ignore.text.offset = TRUE
   )
   
+  if(!is.null(which.lines)) {
+    nr <- nrow(data_fcs)
+    idx <- sample(x = nr, size = min(which.lines, nr))
+    data_fcs <- data_fcs[idx, ]
+  }
+
   # Prepare parameters names
   na_desc_idx <- is.na(data_fcs@parameters@data$desc)
   dup_desc_idx <- duplicated(data_fcs@parameters@data$desc)

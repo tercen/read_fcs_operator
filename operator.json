@@ -22,13 +22,7 @@
     "name": "which.lines",
     "defaultValue": -1,
     "description": "Indicate the number of lines to be read. If -1, all rows are read, otherwise, a random sample of the size indicated by which.lines is read in"
-    },
- {
-    "kind": "BooleanProperty",
-    "name": "alter.names",
-    "defaultValue": false,
-    "description": "boolean indicating whether or not we should rename the columns to valid names"
-  }
+    }
   ]
 }
 
