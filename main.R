@@ -3,7 +3,7 @@ library(tercenApi)
 library(dplyr, warn.conflicts = FALSE)
 library(flowCore)
 
-read_fcs <- function(filename, use.comp, csv.comp, which.lines, separator) {
+read_fcs <- function(filename, use.comp, csv.comp, which.lines, separator, use.descriptions) {
   
   data_fcs <- read.FCS(
     filename,
@@ -64,8 +64,10 @@ read_fcs <- function(filename, use.comp, csv.comp, which.lines, separator) {
   
   data <- as.data.frame(exprs(data_fcs))
   col_names <- colnames(data)
-  desc_parameters <- ifelse(is.na(desc_parameters), col_names, desc_parameters)
-  colnames(data) <- desc_parameters
+  if(use.descriptions) {
+    desc_parameters <- ifelse(is.na(desc_parameters), col_names, desc_parameters)
+    colnames(data) <- desc_parameters
+  }
   
   return.data <- data %>%
     mutate_if(is.logical, as.character) %>%
@@ -84,6 +86,8 @@ if (!any(ctx$cnames == "documentId"))
 
 comp.use <- ctx$op.value("use.builtin.compensation", as.logical, FALSE)
 custom.comp.use <- ctx$op.value("use.custom.compensation", as.logical, FALSE)
+
+use.descriptions <- ctx$op.value("use.descriptions", as.character, TRUE)
 
 # if both options are set to TRUE, custom compensation is used
 if (comp.use & custom.comp.use) comp.use <- FALSE
@@ -140,7 +144,7 @@ task = ctx$task
 f.names %>%
   lapply(function(filename) {
     
-    data = read_fcs(filename, comp.use, c.names, which.lines, separator)
+    data = read_fcs(filename, comp.use, c.names, which.lines, separator, use.descriptions)
     
     if (!is.null(task)) {
       # task is null when run from RStudio

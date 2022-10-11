@@ -5,6 +5,12 @@
   "authors": ["tercen"],
   "urls": ["https://github.com/tercen/read_fcs_operator"],
   "properties": [
+    {
+    "kind": "BooleanProperty",
+    "name": "use.descriptions",
+    "defaultValue": true,
+    "description": "Whether to use the description field to name variables."
+  },
    {
     "kind": "BooleanProperty",
     "name": "use.builtin.compensation",
