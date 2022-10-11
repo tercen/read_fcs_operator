@@ -29,7 +29,7 @@ read_fcs <- function(filename, use.comp, csv.comp, which.lines, separator, use.d
   desc_parameters <- data_fcs@parameters@data$desc
   
   # Do compensation
-  comp.name <- desc_parameters[!(grepl("[FS]S|Time|TIME|Width|Index|Event", desc_parameters))]
+  comp.name <- desc_parameters[!(grepl("[FS]S|Time|TIME|Width|Index|Event|Blank", desc_parameters))]
   
   if (use.comp) {
     
