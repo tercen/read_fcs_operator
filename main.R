@@ -82,6 +82,7 @@ if(output.compensation) {
     save_relation(ctx)
 
 } else {
-  df_merged <- df_merged %>% ctx$addNamespace()
-  ctx$save(df_merged)
+  df_out %>% 
+    ctx$addNamespace() %>%
+    ctx$save()
 }
