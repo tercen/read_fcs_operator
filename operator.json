@@ -5,25 +5,19 @@
   "authors": ["tercen"],
   "urls": ["https://github.com/tercen/read_fcs_operator"],
   "properties": [
-    {
-    "kind": "BooleanProperty",
-    "name": "use.descriptions",
-    "defaultValue": true,
-    "description": "Whether to use the description field to name variables."
-  },
    {
     "kind": "BooleanProperty",
-    "name": "use.builtin.compensation",
+    "name": "use.descriptions",
     "defaultValue": false,
-    "description": "A logical value indicating whether the built-in compensation matrix should be use (Set to false if you do not want the application of the built-in compensation or if you want to use an external matrix)."
-  },
-  {
+    "description": "Whether to use the description field to name variables."
+   },
+   {
     "kind": "BooleanProperty",
-    "name": "use.custom.compensation",
+    "name": "output.compensation",
     "defaultValue": false,
-    "description": "A logical value indicating whether the custom compensation matrix should be use (Set to false if you do not want the application of the compensation or if you want to use an internal matrix)."
-  },
-    {
+    "description": "Whether to output compensation matrices."
+   },
+   {
     "kind": "EnumeratedProperty",
     "name": "Separator",
     "defaultValue": "Comma",
@@ -33,7 +27,7 @@
       "semicolon",
       "Tab"
       ]
-  },
+    },
     {
     "kind": "DoubleProperty",
     "name": "which.lines",
