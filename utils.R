@@ -42,14 +42,14 @@ prepare_files <- function(files) {
 
 get_fcs <- function(filename, which.lines) {
   
-  data_fcs <- read.FCS(
+  data_fcs <- suppressWarnings(read.FCS(
     filename,
     transformation = FALSE,
     which.lines = NULL,
     dataset = 2,
     emptyValue = FALSE,
     ignore.text.offset = TRUE
-  )
+  ))
   
   if(!is.null(which.lines)) {
     nr <- nrow(data_fcs)
@@ -63,12 +63,27 @@ get_fcs <- function(filename, which.lines) {
 get_spill_matrix <- function(data_fcs, csv.comp, separator) {
   
   if(is.na(csv.comp)) {
-    spill.matrix <- spillover(data_fcs)[!unlist(lapply(spillover(data_fcs), is.null))]
     
-    if(length(spill.matrix) > 1) {
-      stop("Multiple compensation matrices found. Compensation cannot be applied.")
+    spill <- try(spillover(data_fcs), silent = TRUE)
+    
+    if(inherits(spill, "try-error")) {
+      
+      spill.matrix <- NA
+      
     } else {
-      spill.matrix <- spill.matrix[[1]]
+      
+      spill.matrix <- spillover(data_fcs)[!unlist(lapply(spillover(data_fcs), is.null))]
+    
+      if(length(spill.matrix) > 1) {
+        
+        stop("Multiple compensation matrices found. Compensation cannot be applied.")
+      
+      } else {
+        
+        spill.matrix <- spill.matrix[[1]]
+        
+      }
+      
     }
   } else {
     if (separator == "Comma") {

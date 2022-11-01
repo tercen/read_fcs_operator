@@ -12,12 +12,6 @@
     "description": "Whether to use the description field to name variables."
    },
    {
-    "kind": "BooleanProperty",
-    "name": "output.compensation",
-    "defaultValue": false,
-    "description": "Whether to output compensation matrices."
-   },
-   {
     "kind": "EnumeratedProperty",
     "name": "Separator",
     "defaultValue": "Comma",

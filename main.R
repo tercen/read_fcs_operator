@@ -14,8 +14,7 @@ if (!any(ctx$cnames == "documentId")) {
   stop("Column factor documentId is required")
 }
 
-use.descriptions <- ctx$op.value("use.descriptions", as.logical, FALSE)
-output.compensation <- ctx$op.value("output.compensation", as.logical, TRUE)
+use.descriptions <- ctx$op.value("use.descriptions", as.logical, TRUE)
 separator <- ctx$op.value("Separator", as.character, "Comma")
 which.lines <- ctx$op.value("which.lines", as.double, -1)
 if(which.lines == -1) which.lines <- NULL
@@ -34,14 +33,14 @@ df <- files_prep %>%
     
     out <- list()
     data <- get_fcs(fn["f.names"], which.lines)
-    if(output.compensation) {
-      out$spill.matrix <- get_spill_matrix(data, csv.comp = fn["c.names"], separator = separator) %>% 
+    out$spill.matrix <- get_spill_matrix(data, csv.comp = fn["c.names"], separator = separator)
+    if(inherits(out$spill.matrix, "matrix")) {
+      out$spill.matrix <- out$spill.matrix %>% 
         as_tibble() %>%
         ctx$addNamespace() %>%
         as.matrix()
-    } else {
-      out$spill.matrix <- NA
     }
+
     out$data <- process_fcs(data, use.descriptions)
 
     if (!is.null(task)) {
@@ -52,10 +51,10 @@ df <- files_prep %>%
       evt$taskId = task$id
       evt$total = length(files_prep$f.names)
       evt$actual = actual
-      evt$message = paste0('Processing FCS file: ' , fn["f.names"])
+      evt$message = paste0('Processing FCS file: ' , fn["f.names"], '\n')
       ctx$client$eventService$sendChannel(task$channelId, evt)
     } else {
-      cat('Processing FCS file: ' , fn["f.names"])
+      cat('Processing FCS file: ' , fn["f.names"], '\n')
     }
     out
   })
@@ -63,8 +62,17 @@ df <- files_prep %>%
 df_out <- lapply(df, "[[", "data") %>%
   bind_rows()
 
-if(output.compensation) {
-  spill.list <- lapply(df, "[[", "spill.matrix")
+spill.list <- lapply(df, "[[", "spill.matrix")
+
+if(any(is.na(unlist(spill.list)))) {
+
+  ctx$log(message = "No built-in compensation matrices found.")
+  df_out %>% 
+    ctx$addNamespace() %>%
+    ctx$save()
+  
+} else {
+
   names(spill.list) <- basename(files_prep$f.names)
   
   df_comp <- data.frame(
@@ -82,8 +90,4 @@ if(output.compensation) {
     as_join_operator(ctx$cnames, ctx$cnames) %>%
     save_relation(ctx)
 
-} else {
-  df_out %>% 
-    ctx$addNamespace() %>%
-    ctx$save()
 }
