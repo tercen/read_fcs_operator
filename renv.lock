@@ -175,6 +175,14 @@
         "glue"
       ]
     },
+    "cpp11": {
+      "Package": "cpp11",
+      "Version": "0.2.7",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Hash": "730eebcc741a5c36761f7d4d0f5e37b8",
+      "Requirements": []
+    },
     "crayon": {
       "Package": "crayon",
       "Version": "1.4.1",
@@ -432,6 +440,26 @@
         "pillar",
         "pkgconfig",
         "rlang",
+        "vctrs"
+      ]
+    },
+    "tidyr": {
+      "Package": "tidyr",
+      "Version": "1.1.3",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Hash": "450d7dfaedde58e28586b854eeece4fa",
+      "Requirements": [
+        "cpp11",
+        "dplyr",
+        "ellipsis",
+        "glue",
+        "lifecycle",
+        "magrittr",
+        "purrr",
+        "rlang",
+        "tibble",
+        "tidyselect",
         "vctrs"
       ]
     },
