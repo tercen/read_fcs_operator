@@ -33,7 +33,8 @@ df <- files_prep %>%
     
     out <- list()
     data <- get_fcs(fn["f.names"], which.lines)
-    out$spill.matrix <- get_spill_matrix(data, csv.comp = fn["c.names"], separator = separator)
+    out$spill.matrix <- get_spill_matrix(data, csv.comp = fn["c.names"], separator = separator, ctx)
+    out$spill.matrix$filename <- basename(fn["f.names"])
     if(inherits(out$spill.matrix, "matrix")) {
       out$spill.matrix <- out$spill.matrix %>% 
         as_tibble() %>%
@@ -62,32 +63,15 @@ df <- files_prep %>%
 df_out <- lapply(df, "[[", "data") %>%
   bind_rows()
 
-spill.list <- lapply(df, "[[", "spill.matrix")
+spill.list <- lapply(df, "[[", "spill.matrix") %>%
+  bind_rows()
 
 if(any(is.na(unlist(spill.list)))) {
-
   ctx$log(message = "No built-in compensation matrices found.")
-  df_out %>% 
-    ctx$addNamespace() %>%
-    ctx$save()
-  
 } else {
-
-  names(spill.list) <- basename(files_prep$f.names)
-  
-  df_comp <- data.frame(
-    compensation_matrices = "compensation_matrices",
-    .base64.serialized.r.model = c(serialize_to_string(spill.list))
-  ) %>% 
-    ctx$addNamespace() %>%
-    as_relation()
-  
-  df_out %>%
-    ctx$addNamespace() %>%
-    as_relation() %>%
-    left_join_relation(ctx$crelation, ".ci", ctx$crelation$rids) %>%
-    left_join_relation(df_comp, list(), list()) %>%
-    as_join_operator(ctx$cnames, ctx$cnames) %>%
-    save_relation(ctx)
-
+  upload_df(spill.list, ctx, files$docname)
 }
+
+df_out %>% 
+  ctx$addNamespace() %>%
+  ctx$save()

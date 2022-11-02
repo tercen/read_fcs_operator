@@ -60,7 +60,7 @@ get_fcs <- function(filename, which.lines) {
   return(data_fcs)
 }
 
-get_spill_matrix <- function(data_fcs, csv.comp, separator) {
+get_spill_matrix <- function(data_fcs, csv.comp, separator, ctx) {
   
   if(is.na(csv.comp)) {
     
@@ -94,6 +94,11 @@ get_spill_matrix <- function(data_fcs, csv.comp, separator) {
       spill.matrix <- read.csv(csv.comp, header = TRUE, sep = ";", row.names = TRUE) 
     }
   }
+  spill.matrix <- spill.matrix %>%
+    as_tibble() %>%
+    ctx$addNamespace() %>%
+    mutate(channel_1 = colnames(.)) %>%
+    tidyr::pivot_longer(cols = !matches("channel_1"), names_to = "channel_2", values_to = "value")
   
   return(spill.matrix)
 }
@@ -124,53 +129,45 @@ process_fcs <- function(data_fcs, use.descriptions) {
   return(fcs.data)
 }
 
-serialize_comp <- function (df, object, object_name, ctx) 
-{
-  df$.object <- object_name
-  columnTable <- ctx$cselect() %>% mutate(.ci = 0:(nrow(.) - 
-                                                     1))
-  leftTable <- data.frame(df) %>% ctx$addNamespace() %>% left_join(columnTable, 
-                                                                   by = ".ci") %>% select(-.ci) %>% tercen::dataframe.as.table()
-  leftTable$properties$name = "left"
-  leftRelation <- SimpleRelation$new()
-  leftRelation$id <- leftTable$properties$name
-  rightTable <- data.frame(compensation_matrices = object_name, .base64.serialized.r.model = c(serialize_to_string(object))) %>% 
-    ctx$addNamespace() %>% tercen::dataframe.as.table()
-  rightTable$properties$name <- "right"
-  rightRelation <- SimpleRelation$new()
-  rightRelation$id <- rightTable$properties$name
-  pair <- ColumnPair$new()
-  pair$lColumns <- list(".object")
-  pair$rColumns = list(rightTable$columns[[1]]$name)
-  join.model = JoinOperator$new()
-  join.model$rightRelation = rightRelation
-  join.model$leftPair = pair
-  compositeRelation = CompositeRelation$new()
-  compositeRelation$id = "compositeRelation"
-  compositeRelation$mainRelation = leftRelation
-  compositeRelation$joinOperators = list(join.model)
-  pair_2 <- ColumnPair$new()
-  pair_2$lColumns <- unname(ctx$cnames)
-  pair_2$rColumns = unname(ctx$cnames)
-  join = JoinOperator$new()
-  join$rightRelation = compositeRelation
-  join$leftPair = pair_2
-  result = OperatorResult$new()
-  result$tables = list(leftTable, rightTable)
-  result$joinOperators = list(join)
-  return(result)
+upload_df <- function(df, ctx, suffix) {
+  project <- ctx$client$projectService$get(ctx$schema$projectId)
+  folder  <- ctx$client$folderService$getOrCreate(project$id, "Compensation")
+  
+  tbl = tercen::dataframe.as.table(df)
+  bytes = memCompress(teRcenHttp::to_tson(tbl$toTson()),
+                      type = 'gzip')
+  
+  fileDoc = FileDocument$new()
+  fileDoc$name = paste0("Compensation-matrices-", suffix)
+  fileDoc$projectId = project$id
+  fileDoc$acl$owner = project$acl$owner
+  fileDoc$metadata$contentEncoding = 'gzip'
+  
+  if (!is.null(folder)) {
+    fileDoc$folderId = folder$id
+  }
+  
+  fileDoc = ctx$client$fileService$upload(fileDoc, bytes)
+  
+  task = CSVTask$new()
+  task$state = InitState$new()
+  task$fileDocumentId = fileDoc$id
+  task$owner = project$acl$owner
+  task$projectId = project$id
+  
+  task = ctx$client$taskService$create(task)
+  ctx$client$taskService$runTask(task$id)
+  task = ctx$client$taskService$waitDone(task$id)
+  if (inherits(task$state, 'FailedState')){
+    stop(task$state$reason)
+  }
+  
+  if (!is.null(folder)) {
+    schema = ctx$client$tableSchemaService$get(task$schemaId)
+    schema$folderId = folder$id
+    ctx$client$tableSchemaService$update(schema)
+  }
+  
+  return(NULL)
 }
 
-serialize_to_string <- function (object) 
-{
-  if (!inherits(object, "list")) 
-    object <- list(object)
-  str64_list <- sapply(object, function(x) {
-    con <- rawConnection(raw(0), "r+")
-    saveRDS(x, con)
-    str64 <- base64enc::base64encode(rawConnectionValue(con))
-    close(con)
-    str64
-  })
-  return((str64_list))
-}
