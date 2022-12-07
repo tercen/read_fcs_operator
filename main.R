@@ -15,8 +15,6 @@ if (!any(ctx$cnames == "documentId")) {
   stop("Column factor documentId is required")
 }
 
-use.descriptions <- ctx$op.value("use.descriptions", as.logical, TRUE)
-separator <- ctx$op.value("Separator", as.character, "Comma")
 which.lines <- ctx$op.value("which.lines", as.double, -1)
 if(which.lines == -1) which.lines <- NULL
 
@@ -26,7 +24,6 @@ files_prep <- prepare_files(files)
 on.exit(unlink(files_prep$f.names))
 
 assign("actual", 0, envir = .GlobalEnv)
-task = ctx$task
 
 # 2. Read and convert FCS files
 df <- files_prep %>%
@@ -34,30 +31,28 @@ df <- files_prep %>%
     
     out <- list()
     data <- get_fcs(fn["f.names"], which.lines)
-    out$spill.matrix <- get_spill_matrix(data, csv.comp = fn["c.names"], separator = separator, ctx)
+    out$spill.matrix <- get_spill_matrix(data, separator = separator, ctx)
     out$spill.matrix$filename <- basename(fn["f.names"])
+    
+    tmp <- process_fcs(data)
+    out$data <- tmp$fcs.data
+    out$map <- tmp$names_map
+
     if(inherits(out$spill.matrix, "matrix")) {
       out$spill.matrix <- out$spill.matrix %>% 
         as_tibble() %>%
         ctx$addNamespace() %>%
         as.matrix()
     }
+    
+    actual = get("actual",  envir = .GlobalEnv) + 1
+    ctx$progress(
+      message = paste0('Processing FCS file: ' , fn["f.names"], '\n'),
+      actual = actual,
+      total = length(files_prep$f.names)
+    )
+    assign("actual", actual, envir = .GlobalEnv)
 
-    out$data <- process_fcs(data, use.descriptions)
-
-    if (!is.null(task)) {
-      # task is null when run from RStudio
-      actual = get("actual",  envir = .GlobalEnv) + 1
-      assign("actual", actual, envir = .GlobalEnv)
-      evt = TaskProgressEvent$new()
-      evt$taskId = task$id
-      evt$total = length(files_prep$f.names)
-      evt$actual = actual
-      evt$message = paste0('Processing FCS file: ' , fn["f.names"], '\n')
-      ctx$client$eventService$sendChannel(task$channelId, evt)
-    } else {
-      cat('Processing FCS file: ' , fn["f.names"], '\n')
-    }
     out
   })
 
@@ -70,8 +65,25 @@ spill.list <- lapply(df, "[[", "spill.matrix") %>%
 if(any(is.na(unlist(spill.list)))) {
   ctx$log(message = "No built-in compensation matrices found.")
 } else {
-  upload_df(spill.list, ctx, files$docname)
+  upload_df(
+    spill.list,
+    ctx,
+    folder_name = "Compensation",
+    prefix = "Compensation-",
+    suffix = files$docname
+  )
 }
+
+names.map <- lapply(df, "[[", "map") %>%
+  bind_rows()
+
+upload_df(
+  names.map,
+  ctx,
+  folder_name = "Annotation",
+  prefix = "Channel-Names-",
+  suffix = files$docname
+)
 
 df_out %>% 
   ctx$addNamespace() %>%

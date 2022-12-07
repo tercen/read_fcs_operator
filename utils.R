@@ -3,8 +3,24 @@ download_files <- function(ctx) {
   if(!"documentId" %in% colnames(df)) stop("documentId factor needs to be projected onto columns.")
   docId <- df$documentId[1]
   doc <- ctx$client$fileService$get(docId)
-  filename_tmp <- tempfile(fileext = paste0(".", tools::file_ext(doc$name)))
-  writeBin(ctx$client$fileService$download(docId), filename_tmp)
+  ext <- tools::file_ext(doc$name)
+  
+  if(ext == "") {
+    filename_tmp <- tempfile()
+    writeBin(ctx$client$fileService$download(docId), filename_tmp)
+    file_mime_type <- system2(
+      command = "file",
+      args = paste0(" -b --mime-type ", filename_tmp),
+      stdout = TRUE
+    )
+    if(file_mime_type == "application/zip") {
+      doc$name <- paste0(doc$name, ".zip")
+    }
+  } else {
+    filename_tmp <- tempfile(fileext = paste0(".", ext))
+    writeBin(ctx$client$fileService$download(docId), filename_tmp)
+  }
+
   return(list(filename_tmp = filename_tmp, docname = doc$name))
 }
 
@@ -19,25 +35,10 @@ prepare_files <- function(files) {
       ignore.case = TRUE,
       recursive = TRUE
     )
-    c.names <- list.files(
-      tmpdir,
-      full.names = TRUE,
-      pattern = "(\\comp.txt$|\\comp.csv$|\\comp.tsv$)",
-      ignore.case = TRUE,
-      recursive = TRUE
-    )
-    c.names <- c.names[!grepl("renv", c.names)]
-    
-    if (length(c.names) > 1) {
-      stop("More than one custom compensation matrix found.")
-    } else if (length(c.names) == 0) {
-      c.names <- NA
-    }
   } else {
     f.names <- files$filename_tmp
-    c.names <- NA
   }
-  return(data.frame(f.names = f.names, c.names = c.names))
+  return(data.frame(f.names = f.names))
 }
 
 get_fcs <- function(filename, which.lines) {
@@ -60,40 +61,20 @@ get_fcs <- function(filename, which.lines) {
   return(data_fcs)
 }
 
-get_spill_matrix <- function(data_fcs, csv.comp, separator, ctx) {
+get_spill_matrix <- function(data_fcs, separator, ctx) {
+  spill <- try(spillover(data_fcs), silent = TRUE)
   
-  if(is.na(csv.comp)) {
-    
-    spill <- try(spillover(data_fcs), silent = TRUE)
-    
-    if(inherits(spill, "try-error")) {
-      
-      spill.matrix <- NA
-      
-    } else {
-      
-      spill.matrix <- spillover(data_fcs)[!unlist(lapply(spillover(data_fcs), is.null))]
-    
-      if(length(spill.matrix) > 1) {
-        
-        stop("Multiple compensation matrices found. Compensation cannot be applied.")
-      
-      } else {
-        
-        spill.matrix <- spill.matrix[[1]]
-        
-      }
-      
-    }
+  if(inherits(spill, "try-error")) {
+    spill.matrix <- NA
   } else {
-    if (separator == "Comma") {
-      spill.matrix <- read.csv(csv.comp, header = TRUE, sep = ",", row.names = TRUE)  
-    } else if (separator == "Tab"){
-      spill.matrix <- read.table(csv.comp, header = TRUE, row.names = TRUE)
-    } else if  (separator == "Semicolon"){
-      spill.matrix <- read.csv(csv.comp, header = TRUE, sep = ";", row.names = TRUE) 
+    spill.matrix <- spillover(data_fcs)[!unlist(lapply(spillover(data_fcs), is.null))]
+    if(length(spill.matrix) > 1) {
+      stop("Multiple compensation matrices found. Compensation cannot be applied.")
+    } else {
+      spill.matrix <- spill.matrix[[1]]
     }
   }
+  
   spill.matrix <- spill.matrix %>%
     as_tibble() %>%
     ctx$addNamespace() %>%
@@ -103,7 +84,7 @@ get_spill_matrix <- function(data_fcs, csv.comp, separator, ctx) {
   return(spill.matrix)
 }
 
-process_fcs <- function(data_fcs, use.descriptions) {
+process_fcs <- function(data_fcs) {
   
   # Prepare parameters names
   na_desc_idx <- is.na(data_fcs@parameters@data$desc)
@@ -115,30 +96,29 @@ process_fcs <- function(data_fcs, use.descriptions) {
   
   data <- as.data.frame(exprs(data_fcs))
   col_names <- colnames(data)
-  if(use.descriptions) {
-    desc_parameters <- ifelse(is.na(desc_parameters), col_names, desc_parameters)
-    colnames(data) <- desc_parameters
-  }
-  
+  desc_parameters <- ifelse(is.na(desc_parameters), col_names, desc_parameters)
+  names_map <- tibble(name = colnames(data), description = desc_parameters) %>%
+    mutate(filename = rep_len(basename(data_fcs@description$FILENAME), nrow(.)))
+
   fcs.data <- data %>%
     mutate_if(is.logical, as.character) %>%
     mutate_if(is.integer, as.double) %>%
     mutate(.ci = as.integer(rep_len(0, nrow(.)))) %>%
     mutate(filename = rep_len(basename(data_fcs@description$FILENAME), nrow(.)))
   
-  return(fcs.data)
+  return(list(fcs.data = fcs.data, names_map = names_map))
 }
 
-upload_df <- function(df, ctx, suffix) {
+upload_df <- function(df, ctx, folder_name, prefix, suffix) {
   project <- ctx$client$projectService$get(ctx$schema$projectId)
-  folder  <- ctx$client$folderService$getOrCreate(project$id, "Compensation")
+  folder  <- ctx$client$folderService$getOrCreate(project$id, folder_name)
   
   tbl = tercen::dataframe.as.table(df)
   bytes = memCompress(teRcenHttp::to_tson(tbl$toTson()),
                       type = 'gzip')
   
   fileDoc = FileDocument$new()
-  fileDoc$name = paste0("Compensation-matrices-", suffix)
+  fileDoc$name = paste0(prefix, suffix)
   fileDoc$projectId = project$id
   fileDoc$acl$owner = project$acl$owner
   fileDoc$metadata$contentEncoding = 'gzip'
