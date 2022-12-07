@@ -5,23 +5,6 @@
   "authors": ["tercen"],
   "urls": ["https://github.com/tercen/read_fcs_operator"],
   "properties": [
-   {
-    "kind": "BooleanProperty",
-    "name": "use.descriptions",
-    "defaultValue": false,
-    "description": "Whether to use the description field to name variables."
-   },
-   {
-    "kind": "EnumeratedProperty",
-    "name": "Separator",
-    "defaultValue": "Comma",
-    "description": "Type of the separator between values (if custom compensation matrix is provided)",
-	  "values": [
-      "Comma",
-      "semicolon",
-      "Tab"
-      ]
-    },
     {
     "kind": "DoubleProperty",
     "name": "which.lines",
