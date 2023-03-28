@@ -57,34 +57,63 @@ df <- files_prep %>%
   })
 
 df_out <- lapply(df, "[[", "data") %>%
-  bind_rows()
+  bind_rows() %>%
+  mutate(eventId = as.integer(seq_len(nrow(.)))) # %>%
+  # ctx$addNamespace()
+
+expression_table <- pivot_longer(
+  df_out %>% select(-filename),
+  cols = !contains(c("filename", ".ci", "eventId")),
+  names_to = "channel",
+  values_to = "value",
+  names_transform = list(channel = as.factor)
+)
+
+event_table <- df_out %>%
+  as_tibble() %>%
+  select(filename, eventId) %>% 
+  distinct()
+
+marker_table <- tibble(
+  channel_name = levels(expression_table$channel)
+) %>%
+  mutate(channel_id = seq_len(nrow(.)))
+
+expression_table <- expression_table %>%
+  mutate(channel_id = as.integer(channel))
 
 spill.list <- lapply(df, "[[", "spill.matrix") %>%
   bind_rows()
 
-if(any(is.na(unlist(spill.list)))) {
-  ctx$log(message = "No built-in compensation matrices found.")
-} else {
-  upload_df(
-    spill.list,
-    ctx,
-    folder_name = "Compensation",
-    prefix = "Compensation-",
-    suffix = files$docname
-  )
-}
-
 names.map <- lapply(df, "[[", "map") %>%
   bind_rows()
 
-upload_df(
-  names.map,
-  ctx,
-  folder_name = "Annotation",
-  prefix = "Channel-Names-",
-  suffix = files$docname
-)
+names.map <- names.map %>% 
+  select(name, description) %>% 
+  distinct() %>% 
+  rename(channel_name = name)
 
-df_out %>% 
-  ctx$addNamespace() %>%
-  ctx$save()
+bad_description <- names.map %>% 
+  select(channel_name) %>% 
+  duplicated() %>%
+  any()
+
+if(bad_description) {
+  ctx$log(message = "Different descriptions for the same channel name have been found. Description field will be ignored.")
+} else {
+  marker_table <- marker_table %>% left_join(names.map, by = "channel_name")
+}
+
+rel_out <- expression_table %>% 
+  as_relation %>%
+  left_join_relation(marker_table %>% as_relation, "channel_id", "channel_id") %>%
+  left_join_relation(event_table %>% as_relation, "eventId", "eventId")
+
+if(!any(is.na(unlist(spill.list)))) {
+  ctx$log(message = "No built-in compensation matrices found.")
+  rel_out <- rel_out %>% left_join_relation(spill.list %>% as_relation, list(), list())
+}
+
+rel_out %>%
+  as_join_operator(list(), list()) %>%
+  save_relation(ctx)
