@@ -18,18 +18,13 @@
     },
     {
       "kind": "ColumnSchema",
-      "name": ".ci",
+      "name": "event_id",
       "type": "int32"
     },
     {
       "kind": "ColumnSchema",
       "name": "filename",
       "type": "string"
-    },
-    {
-      "kind": "ColumnSchema",
-      "name": "event_id",
-      "type": "int32"
     }
   ]
 }

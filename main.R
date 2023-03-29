@@ -58,14 +58,21 @@ df <- files_prep %>%
     out
   })
 
-df_out <- lapply(df, "[[", "data") %>%
+fcs_nm <- unlist(lapply(df, "[[", "fcs_name"))
+fcs <- seq_along(fcs_nm)
+names(fcs) <- fcs_nm
+
+df_out <- lapply(df, "[[", "data") 
+df_out <- mapply(cbind, df_out, "fileId" = fcs, SIMPLIFY = F) %>%
   bind_rows() %>%
   mutate(event_id = as.integer(seq_len(nrow(.))))
 
 event_table <- df_out %>%
   as_tibble() %>%
   select(matches("[a-zA-Z]")) %>% 
-  distinct()
+  distinct() %>%
+  mutate(filename = names(fcs)[fileId]) %>%
+  select(-fileId)
 
 expression_table <- df_out %>% 
   select(matches("[0-9]+|event_id")) %>%
@@ -105,6 +112,7 @@ rel_out <- expression_table %>%
 
 if(!any(is.na(unlist(spill.list)))) {
   ctx$log(message = "No built-in compensation matrices found.")
+} else {
   rel_out <- rel_out %>% left_join_relation(spill.list %>% as_relation, list(), list())
 }
 
