@@ -75,7 +75,8 @@ expression_table <- df_out %>%
     value.name = "value", variable.name = "channel_id"
   ) %>% 
   as_tibble() %>%
-  mutate(channel_id = as.integer(channel_id))
+  mutate(channel_id = as.integer(channel_id)) %>%
+  arrange(event_id, channel_id)
 
 spill.list <- lapply(df, "[[", "spill.matrix") %>%
   bind_rows()
