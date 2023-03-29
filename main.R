@@ -5,6 +5,7 @@ suppressPackageStartupMessages({
   library(flowCore)
   library(base64enc)
   library(tidyr)
+  library(data.table)
 })
 
 source("./utils.R")
@@ -38,11 +39,11 @@ df <- files_prep %>%
     tmp <- process_fcs(data, ungather_pattern)
     out$data <- tmp$fcs.data
     out$map <- tmp$names_map
-
+    out$fcs_name <- tmp$fcs_name
+    
     if(inherits(out$spill.matrix, "matrix")) {
       out$spill.matrix <- out$spill.matrix %>% 
         as_tibble() %>%
-        ctx$addNamespace() %>%
         as.matrix()
     }
     
@@ -61,19 +62,20 @@ df_out <- lapply(df, "[[", "data") %>%
   bind_rows() %>%
   mutate(event_id = as.integer(seq_len(nrow(.))))
 
-expression_table <- pivot_longer(
-  df_out %>% select(matches("[0-9]+|event_id")),
-  cols = !matches("[a-zA-Z]"),
-  names_to = "channel_id",
-  values_to = "value",
-  names_transform = list(channel_id = as.integer)
-) # %>%
-# ctx$addNamespace()
-
 event_table <- df_out %>%
   as_tibble() %>%
   select(matches("[a-zA-Z]")) %>% 
   distinct()
+
+expression_table <- df_out %>% 
+  select(matches("[0-9]+|event_id")) %>%
+  as.data.table() %>%
+  melt(
+    id.vars = c("event_id"),
+    value.name = "value", variable.name = "channel_id"
+  ) %>% 
+  as_tibble() %>%
+  mutate(channel_id = as.integer(channel_id))
 
 spill.list <- lapply(df, "[[", "spill.matrix") %>%
   bind_rows()

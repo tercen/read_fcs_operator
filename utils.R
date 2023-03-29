@@ -69,15 +69,14 @@ get_spill_matrix <- function(data_fcs, separator, ctx) {
   } else {
     spill.matrix <- spillover(data_fcs)[!unlist(lapply(spillover(data_fcs), is.null))]
     if(length(spill.matrix) > 1) {
-      stop("Multiple compensation matrices found. Compensation cannot be applied.")
-    } else {
-      spill.matrix <- spill.matrix[[1]]
+      ctx$log("Multiple compensation matrices found. Only the first one will be output.")
     }
+    spill.matrix <- spill.matrix[[1]]
   }
   
   spill.matrix <- spill.matrix %>%
     as_tibble() %>%
-    ctx$addNamespace() %>%
+    # ctx$addNamespace() %>%
     mutate(comp_1 = colnames(.)) %>%
     tidyr::pivot_longer(cols = !matches("comp_1"), names_to = "comp_2", values_to = "comp_value")
   
@@ -105,14 +104,13 @@ process_fcs <- function(data_fcs, ungather_pattern) {
     mutate(channel_id = as.integer(seq_len(nrow(.)))) %>%
     mutate(filename = rep_len(basename(data_fcs@description$FILENAME), nrow(.)))
 
+  fcs_name = basename(data_fcs@description$FILENAME)
   colnames(data)[!condx] <- names_map$channel_id
   fcs.data <- data %>%
     mutate_if(is.logical, as.character) %>%
-    mutate_if(is.integer, as.double) %>%
-    mutate(.ci = as.integer(rep_len(0, nrow(.)))) %>%
-    mutate(filename = rep_len(basename(data_fcs@description$FILENAME), nrow(.)))
+    mutate_if(is.integer, as.double)
   
-  return(list(fcs.data = fcs.data, names_map = names_map))
+  return(list(fcs.data = fcs.data, names_map = names_map, fcs_name = fcs_name))
 }
 
 upload_df <- function(df, ctx, folder_name, prefix, suffix) {
