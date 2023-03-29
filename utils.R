@@ -78,8 +78,8 @@ get_spill_matrix <- function(data_fcs, separator, ctx) {
   spill.matrix <- spill.matrix %>%
     as_tibble() %>%
     ctx$addNamespace() %>%
-    mutate(channel_1 = colnames(.)) %>%
-    tidyr::pivot_longer(cols = !matches("channel_1"), names_to = "channel_2", values_to = "value")
+    mutate(comp_1 = colnames(.)) %>%
+    tidyr::pivot_longer(cols = !matches("comp_1"), names_to = "comp_2", values_to = "comp_value")
   
   return(spill.matrix)
 }
