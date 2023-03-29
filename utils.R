@@ -84,7 +84,7 @@ get_spill_matrix <- function(data_fcs, separator, ctx) {
   return(spill.matrix)
 }
 
-process_fcs <- function(data_fcs) {
+process_fcs <- function(data_fcs, ungather_pattern) {
   
   # Prepare parameters names
   na_desc_idx <- is.na(data_fcs@parameters@data$desc)
@@ -96,10 +96,16 @@ process_fcs <- function(data_fcs) {
   
   data <- as.data.frame(exprs(data_fcs))
   col_names <- colnames(data)
+  
+  condx <- grepl(ungather_pattern, col_names, ignore.case = TRUE)
+  
   desc_parameters <- ifelse(is.na(desc_parameters), col_names, desc_parameters)
-  names_map <- tibble(name = colnames(data), description = desc_parameters) %>%
+  names_map <- tibble(channel_name = colnames(data), channel_description = desc_parameters) %>%
+    dplyr::filter(!condx) %>%
+    mutate(channel_id = as.integer(seq_len(nrow(.)))) %>%
     mutate(filename = rep_len(basename(data_fcs@description$FILENAME), nrow(.)))
 
+  colnames(data)[!condx] <- names_map$channel_id
   fcs.data <- data %>%
     mutate_if(is.logical, as.character) %>%
     mutate_if(is.integer, as.double) %>%

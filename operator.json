@@ -10,6 +10,12 @@
     "name": "which.lines",
     "defaultValue": -1,
     "description": "Indicate the number of lines to be read. If -1, all rows are read, otherwise, a random sample of the size indicated by which.lines is read in"
+    },
+    {
+    "kind": "StringProperty",
+    "name": "ungather_pattern",
+    "defaultValue": "time|event",
+    "description": "Specify the pattern used to identify channels that won't be gathered. Case is ignored."
     }
   ]
 }

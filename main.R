@@ -17,6 +17,7 @@ if (!any(ctx$cnames == "documentId")) {
 
 which.lines <- ctx$op.value("which.lines", as.double, -1)
 if(which.lines == -1) which.lines <- NULL
+ungather_pattern <- ctx$op.value("ungather_pattern", as.character, "time|event")
 
 # 1. Extract files
 files <- download_files(ctx)
@@ -34,7 +35,7 @@ df <- files_prep %>%
     out$spill.matrix <- get_spill_matrix(data, separator = separator, ctx)
     out$spill.matrix$filename <- basename(fn["f.names"])
     
-    tmp <- process_fcs(data)
+    tmp <- process_fcs(data, ungather_pattern)
     out$data <- tmp$fcs.data
     out$map <- tmp$names_map
 
@@ -58,40 +59,29 @@ df <- files_prep %>%
 
 df_out <- lapply(df, "[[", "data") %>%
   bind_rows() %>%
-  mutate(eventId = as.integer(seq_len(nrow(.)))) # %>%
-  # ctx$addNamespace()
+  mutate(event_id = as.integer(seq_len(nrow(.))))
 
 expression_table <- pivot_longer(
-  df_out %>% select(-filename),
-  cols = !contains(c("filename", ".ci", "eventId")),
-  names_to = "channel",
+  df_out %>% select(matches("[0-9]+|event_id")),
+  cols = !matches("[a-zA-Z]"),
+  names_to = "channel_id",
   values_to = "value",
-  names_transform = list(channel = as.factor)
-)
+  names_transform = list(channel_id = as.integer)
+) # %>%
+# ctx$addNamespace()
 
 event_table <- df_out %>%
   as_tibble() %>%
-  select(filename, eventId) %>% 
+  select(matches("[a-zA-Z]")) %>% 
   distinct()
-
-marker_table <- tibble(
-  channel_name = levels(expression_table$channel)
-) %>%
-  mutate(channel_id = seq_len(nrow(.)))
-
-expression_table <- expression_table %>%
-  mutate(channel_id = as.integer(channel))
 
 spill.list <- lapply(df, "[[", "spill.matrix") %>%
   bind_rows()
 
 names.map <- lapply(df, "[[", "map") %>%
-  bind_rows()
-
-names.map <- names.map %>% 
-  select(name, description) %>% 
-  distinct() %>% 
-  rename(channel_name = name)
+  bind_rows() %>%
+  select(channel_name, channel_description, channel_id) %>% 
+  distinct()
 
 bad_description <- names.map %>% 
   select(channel_name) %>% 
@@ -100,14 +90,15 @@ bad_description <- names.map %>%
 
 if(bad_description) {
   ctx$log(message = "Different descriptions for the same channel name have been found. Description field will be ignored.")
+  marker_table <- names.map %>% select(channel_name, channel_id) %>% distinct()
 } else {
-  marker_table <- marker_table %>% left_join(names.map, by = "channel_name")
+  marker_table <- names.map
 }
 
 rel_out <- expression_table %>% 
   as_relation %>%
   left_join_relation(marker_table %>% as_relation, "channel_id", "channel_id") %>%
-  left_join_relation(event_table %>% as_relation, "eventId", "eventId")
+  left_join_relation(event_table %>% as_relation, "event_id", "event_id")
 
 if(!any(is.na(unlist(spill.list)))) {
   ctx$log(message = "No built-in compensation matrices found.")
