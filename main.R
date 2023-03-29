@@ -110,7 +110,7 @@ rel_out <- expression_table %>%
   left_join_relation(marker_table %>% as_relation, "channel_id", "channel_id") %>%
   left_join_relation(event_table %>% as_relation, "event_id", "event_id")
 
-if(!any(is.na(unlist(spill.list)))) {
+if(any(is.na(unlist(spill.list)))) {
   ctx$log(message = "No built-in compensation matrices found.")
 } else {
   rel_out <- rel_out %>% left_join_relation(spill.list %>% as_relation, list(), list())
