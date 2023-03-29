@@ -1,0 +1,20 @@
+{
+  "kind": "TableSchema",
+  "columns": [
+    {
+      "kind": "ColumnSchema",
+      "name": "channel_name",
+      "type": "string"
+    },
+    {
+      "kind": "ColumnSchema",
+      "name": "channel_description",
+      "type": "string"
+    },
+    {
+      "kind": "ColumnSchema",
+      "name": "channel_id",
+      "type": "int32"
+    }
+  ]
+}

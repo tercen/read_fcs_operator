@@ -1,0 +1,20 @@
+{
+  "kind": "TableSchema",
+  "columns": [
+    {
+      "kind": "ColumnSchema",
+      "name": "event_id",
+      "type": "int32"
+    },
+    {
+      "kind": "ColumnSchema",
+      "name": "channel_id",
+      "type": "int32"
+    },
+    {
+      "kind": "ColumnSchema",
+      "name": "value",
+      "type": "double"
+    }
+  ]
+}

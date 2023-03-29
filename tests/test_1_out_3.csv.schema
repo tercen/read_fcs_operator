@@ -1,0 +1,35 @@
+{
+  "kind": "TableSchema",
+  "columns": [
+    {
+      "kind": "ColumnSchema",
+      "name": "Event #",
+      "type": "double"
+    },
+    {
+      "kind": "ColumnSchema",
+      "name": "Time",
+      "type": "double"
+    },
+    {
+      "kind": "ColumnSchema",
+      "name": "Event_length",
+      "type": "double"
+    },
+    {
+      "kind": "ColumnSchema",
+      "name": ".ci",
+      "type": "int32"
+    },
+    {
+      "kind": "ColumnSchema",
+      "name": "filename",
+      "type": "string"
+    },
+    {
+      "kind": "ColumnSchema",
+      "name": "event_id",
+      "type": "int32"
+    }
+  ]
+}
