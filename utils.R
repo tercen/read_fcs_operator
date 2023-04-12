@@ -157,8 +157,3 @@ upload_df <- function(df, ctx, folder_name, prefix, suffix) {
   return(NULL)
 }
 
-
-
-postprocess_fcs_relations <- function(gather = FALSE) {
-  return(rel_out)
-}
