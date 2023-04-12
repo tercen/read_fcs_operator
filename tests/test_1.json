@@ -17,7 +17,7 @@
   "propertyValues": [
     {
       "kind": "PropertyValue",
-      "name": "gather",
+      "name": "gather_channels",
       "value": "true"
     }
   ],
