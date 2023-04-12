@@ -14,6 +14,13 @@
   "xAxis": "",
   "generatedOn": "03/29/2023 10:06:48 AM 2023",
   "version": "",
+  "propertyValues": [
+    {
+      "kind": "PropertyValue",
+      "name": "gather",
+      "value": "true"
+    }
+  ],
   "inputFileUris": ["fcs_test.zip"],
   "absTol": 1e-06
 }

@@ -1,6 +1,5 @@
 suppressPackageStartupMessages({
   library(tercen)
-  library(tercenApi)
   library(dplyr, warn.conflicts = FALSE)
   library(flowCore)
   library(base64enc)
@@ -17,7 +16,8 @@ if (!any(ctx$cnames == "documentId")) {
 }
 
 which.lines <- ctx$op.value("which.lines", as.double, -1)
-if(which.lines == -1) which.lines <- NULL
+if(which.lines == -1 | is.na(which.lines)) which.lines <- NULL
+do.gather <- ctx$op.value("gather", as.logical, TRUE)
 ungather_pattern <- ctx$op.value("ungather_pattern", as.character, "time|event")
 
 # 1. Extract files
@@ -36,7 +36,7 @@ df <- files_prep %>%
     out$spill.matrix <- get_spill_matrix(data, separator = separator, ctx)
     out$spill.matrix$filename <- basename(fn["f.names"])
     
-    tmp <- process_fcs(data, ungather_pattern)
+    tmp <- process_fcs(data, do.gather = do.gather, ungather_pattern)
     out$data <- tmp$fcs.data
     out$map <- tmp$names_map
     out$fcs_name <- tmp$fcs_name
@@ -65,32 +65,37 @@ names(fcs) <- fcs_nm
 df_out <- lapply(df, "[[", "data") 
 df_out <- mapply(cbind, df_out, "fileId" = fcs, SIMPLIFY = F) %>%
   bind_rows() %>%
-  mutate(event_id = as.integer(seq_len(nrow(.))))
+  as.data.table() %>%
+  mutate(event_id = seq_len(nrow(.)))
 
 event_table <- df_out %>%
-  as_tibble() %>%
-  select(matches("[a-zA-Z]")) %>% 
+  select(matches(ifelse(do.gather, "[a-zA-Z]", "fileId|event_id"))) %>% 
   distinct() %>%
   mutate(filename = names(fcs)[fileId]) %>%
-  select(-fileId)
+  select(-fileId) %>%
+  as_relation()
 
-expression_table <- df_out %>% 
-  select(matches("[0-9]+|event_id")) %>%
-  as.data.table() %>%
-  melt(
-    id.vars = c("event_id"),
-    value.name = "value", variable.name = "channel_id"
-  ) %>% 
-  as_tibble() %>%
-  mutate(channel_id = as.integer(channel_id)) %>%
-  arrange(event_id, channel_id)
+if(do.gather) {
+  expression_table <- df_out %>% 
+    select(matches("[0-9]+|event_id")) %>%
+    melt(
+      id.vars = c("event_id"),
+      value.name = "value", variable.name = "channel_id"
+    ) %>%
+    mutate(channel_id = as.integer(channel_id)) %>%
+  arrange(event_id, channel_id) %>% 
+  as_tibble()
+} else {
+  expression_table <- df_out
+}
 
 spill.list <- lapply(df, "[[", "spill.matrix") %>%
   bind_rows()
 
 names.map <- lapply(df, "[[", "map") %>%
   bind_rows() %>%
-  select(channel_name, channel_description, channel_id) %>% 
+  as.data.table() %>%
+  select(channel_name, channel_description, channel_id) %>%
   distinct()
 
 bad_description <- names.map %>% 
@@ -100,22 +105,29 @@ bad_description <- names.map %>%
 
 if(bad_description) {
   ctx$log(message = "Different descriptions for the same channel name have been found. Description field will be ignored.")
-  marker_table <- names.map %>% select(channel_name, channel_id) %>% distinct()
+  marker_table <- names.map %>% 
+    select(channel_name, channel_id) %>%
+    distinct() %>% 
+    as_relation()
 } else {
-  marker_table <- names.map
+  marker_table <- names.map %>% as_relation()
 }
 
 rel_out <- expression_table %>% 
   as_relation %>%
-  left_join_relation(marker_table %>% as_relation, "channel_id", "channel_id") %>%
-  left_join_relation(event_table %>% as_relation, "event_id", "event_id")
+  left_join_relation(event_table, "event_id", "event_id")
+
+if(do.gather) {
+  rel_out <- rel_out %>% left_join_relation(marker_table, "channel_id", "channel_id")
+}
 
 if(any(is.na(unlist(spill.list)))) {
   ctx$log(message = "No built-in compensation matrices found.")
+  rel_out %>%
+    as_join_operator(list(), list()) %>%
+    save_relation(ctx)
 } else {
-  rel_out <- rel_out %>% left_join_relation(spill.list %>% as_relation, list(), list())
+  spill.list <- spill.list %>% as_relation %>% as_join_operator(list(), list())
+  rel_out <- rel_out %>% as_join_operator(list(), list()) 
+  save_relation(list(rel_out, spill.list), ctx)
 }
-
-rel_out %>%
-  as_join_operator(list(), list()) %>%
-  save_relation(ctx)
