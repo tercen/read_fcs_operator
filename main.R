@@ -34,7 +34,7 @@ df <- files_prep %>%
     out <- list()
     data <- get_fcs(fn["f.names"], which.lines)
     out$spill.matrix <- get_spill_matrix(data, separator = separator, ctx)
-    out$spill.matrix$filename <- basename(fn["f.names"])
+    if(!(is.na(out$spill.matrix)[1])) out$spill.matrix$filename <- basename(fn["f.names"])
     
     tmp <- process_fcs(data, do.gather = do.gather, ungather_pattern)
     out$data <- tmp$fcs.data
@@ -89,8 +89,11 @@ if(do.gather) {
   expression_table <- df_out
 }
 
-spill.list <- lapply(df, "[[", "spill.matrix") %>%
-  bind_rows()
+output.spill <- !any(is.na(unlist(lapply(df, "[[", "spill.matrix"))))
+if(output.spill) {
+  spill.list <- lapply(df, "[[", "spill.matrix") %>%
+    bind_rows()
+}
 
 names.map <- lapply(df, "[[", "map") %>%
   bind_rows() %>%
@@ -121,7 +124,7 @@ if(do.gather) {
   rel_out <- rel_out %>% left_join_relation(marker_table, "channel_id", "channel_id")
 }
 
-if(any(is.na(unlist(spill.list)))) {
+if(!output.spill) {
   ctx$log(message = "No built-in compensation matrices found.")
   rel_out %>%
     as_join_operator(list(), list()) %>%

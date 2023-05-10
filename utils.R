@@ -63,7 +63,7 @@ get_fcs <- function(filename, which.lines) {
 
 get_spill_matrix <- function(data_fcs, separator, ctx) {
   spill <- try(spillover(data_fcs), silent = TRUE)
-  
+
   if(inherits(spill, "try-error")) {
     spill.matrix <- NA
   } else {
@@ -72,13 +72,17 @@ get_spill_matrix <- function(data_fcs, separator, ctx) {
       ctx$log("Multiple compensation matrices found. Only the first one will be output.")
     }
     spill.matrix <- spill.matrix[[1]]
+    
+    if(any(dim(spill.matrix) == 0)) {
+      spill.matrix <- NA
+    } else {
+      spill.matrix <- spill.matrix %>%
+        as_tibble() %>%
+        # ctx$addNamespace() %>%
+        mutate(comp_1 = colnames(.)) %>%
+        tidyr::pivot_longer(cols = !matches("comp_1"), names_to = "comp_2", values_to = "comp_value")
+    }
   }
-  
-  spill.matrix <- spill.matrix %>%
-    as_tibble() %>%
-    # ctx$addNamespace() %>%
-    mutate(comp_1 = colnames(.)) %>%
-    tidyr::pivot_longer(cols = !matches("comp_1"), names_to = "comp_2", values_to = "comp_value")
   
   return(spill.matrix)
 }
