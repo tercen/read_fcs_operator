@@ -110,19 +110,23 @@ if(bad_description) {
   ctx$log(message = "Different descriptions for the same channel name have been found. Description field will be ignored.")
   marker_table <- names.map %>% 
     select(channel_name, channel_id) %>%
-    distinct() %>% 
-    as_relation()
+    distinct()
 } else {
-  marker_table <- names.map %>% as_relation()
+  marker_table <- names.map 
 }
 
 rel_out <- expression_table %>% 
   as_relation %>%
   left_join_relation(event_table, "event_id", "event_id")
 
-if(do.gather) {
-  rel_out <- rel_out %>% left_join_relation(marker_table, "channel_id", "channel_id")
-}
+## Output marker annotation table
+upload_df(
+  marker_table,
+  ctx,
+  folder_name = "FCS Annotations",
+  prefix = "Channel-Descriptions-",
+  suffix = paste0(files$docname, format(Sys.time(), "-%D-%H:%M:%S"))
+)
 
 if(!output.spill) {
   ctx$log(message = "No built-in compensation matrices found.")
