@@ -1,5 +1,6 @@
 suppressPackageStartupMessages({
   library(tercen)
+  library(tercenApi)
   library(dplyr, warn.conflicts = FALSE)
   library(flowCore)
   library(base64enc)
