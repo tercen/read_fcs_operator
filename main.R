@@ -121,6 +121,9 @@ rel_out <- expression_table %>%
   left_join_relation(event_table, "event_id", "event_id")
 
 ## Output marker annotation table
+if(do.gather) {
+  rel_out <- rel_out %>% left_join_relation(marker_table %>% as_relation(), "channel_id", "channel_id")
+}
 upload_df(
   marker_table,
   ctx,
