@@ -18,7 +18,7 @@ if (!any(ctx$cnames == "documentId")) {
 
 which.lines <- ctx$op.value("which.lines", as.double, -1)
 if(which.lines == -1 | is.na(which.lines)) which.lines <- NULL
-do.gather <- ctx$op.value("gather_channels", as.logical, TRUE)
+do.gather <- ctx$op.value("gather_channels", as.logical, FALSE)
 ungather_pattern <- ctx$op.value("ungather_pattern", as.character, "time|event")
 
 # 1. Extract files

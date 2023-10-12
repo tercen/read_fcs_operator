@@ -49,7 +49,8 @@ get_fcs <- function(filename, which.lines) {
     which.lines = NULL,
     dataset = 2,
     emptyValue = FALSE,
-    ignore.text.offset = TRUE
+    ignore.text.offset = TRUE,
+    truncate_max_range = FALSE
   ))
   
   if(!is.null(which.lines)) {
