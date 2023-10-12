@@ -22,8 +22,12 @@
     "name": "ungather_pattern",
     "defaultValue": "time|event",
     "description": "Specify the pattern used to identify channels that won't be gathered. Case is ignored."
+    },
+    {
+    "kind": "BooleanProperty",
+    "name": "truncate_max_range",
+    "defaultValue": true,
+    "description": "truncate_max_range setting from read.FCS function."
     }
   ]
 }
-
-

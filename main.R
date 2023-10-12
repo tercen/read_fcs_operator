@@ -20,6 +20,7 @@ which.lines <- ctx$op.value("which.lines", as.double, -1)
 if(which.lines == -1 | is.na(which.lines)) which.lines <- NULL
 do.gather <- ctx$op.value("gather_channels", as.logical, FALSE)
 ungather_pattern <- ctx$op.value("ungather_pattern", as.character, "time|event")
+truncate_max_range <- ctx$op.value("truncate_max_range", as.logical, TRUE)
 
 # 1. Extract files
 files <- download_files(ctx)
@@ -33,7 +34,7 @@ df <- files_prep %>%
   apply(MARGIN = 1, function(fn) {
     
     out <- list()
-    data <- get_fcs(fn["f.names"], which.lines)
+    data <- get_fcs(fn["f.names"], which.lines, truncate_max_range)
     out$spill.matrix <- get_spill_matrix(data, separator = separator, ctx)
     if(!(is.na(out$spill.matrix)[1])) out$spill.matrix$filename <- basename(fn["f.names"])
     

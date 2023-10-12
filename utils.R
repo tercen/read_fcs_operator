@@ -41,7 +41,7 @@ prepare_files <- function(files) {
   return(data.frame(f.names = f.names))
 }
 
-get_fcs <- function(filename, which.lines) {
+get_fcs <- function(filename, which.lines, truncate_max_range) {
   
   data_fcs <- suppressWarnings(read.FCS(
     filename,
@@ -50,7 +50,7 @@ get_fcs <- function(filename, which.lines) {
     dataset = 2,
     emptyValue = FALSE,
     ignore.text.offset = TRUE,
-    truncate_max_range = FALSE
+    truncate_max_range = truncate_max_range
   ))
   
   if(!is.null(which.lines)) {
