@@ -1,33 +1,40 @@
 {
   "name": "FCS",
   "description": "Import a Flow Cytometry Standard file (.fcs).",
-  "tags": ["import", "flow cytometry"],
-  "authors": ["tercen"],
-  "urls": ["https://github.com/tercen/read_fcs_operator"],
+  "tags": [
+    "import",
+    "flow cytometry"
+  ],
+  "authors": [
+    "tercen"
+  ],
+  "urls": [
+    "https://github.com/tercen/read_fcs_operator"
+  ],
   "properties": [
     {
-    "kind": "DoubleProperty",
-    "name": "which.lines",
-    "defaultValue": -1,
-    "description": "Indicate the number of lines to be read. If -1, all rows are read, otherwise, a random sample of the size indicated by which.lines is read in"
+      "kind": "DoubleProperty",
+      "name": "which.lines",
+      "defaultValue": -1,
+      "description": "Indicate the number of lines to be read. If -1, all rows are read, otherwise, a random sample of the size indicated by which.lines is read in"
     },
     {
-    "kind": "BooleanProperty",
-    "name": "gather_channels",
-    "defaultValue": false,
-    "description": "Whether to gather data or not."
+      "kind": "BooleanProperty",
+      "name": "gather_channels",
+      "defaultValue": false,
+      "description": "Whether to gather data or not."
     },
     {
-    "kind": "StringProperty",
-    "name": "ungather_pattern",
-    "defaultValue": "time|event",
-    "description": "Specify the pattern used to identify channels that won't be gathered. Case is ignored."
+      "kind": "StringProperty",
+      "name": "ungather_pattern",
+      "defaultValue": "time|event",
+      "description": "Specify the pattern used to identify channels that won't be gathered. Case is ignored."
     },
     {
-    "kind": "BooleanProperty",
-    "name": "truncate_max_range",
-    "defaultValue": true,
-    "description": "truncate_max_range setting from read.FCS function."
+      "kind": "BooleanProperty",
+      "name": "truncate_max_range",
+      "defaultValue": true,
+      "description": "truncate_max_range setting from read.FCS function."
     }
   ]
 }
