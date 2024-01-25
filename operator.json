@@ -1,6 +1,6 @@
 {
   "name": "FCS",
-  "description": "Import a Flow Cytometry Standard file (.fcs).",
+  "description": "Imports a Flow Cytometry Standard file (.fcs).",
   "tags": [
     "import",
     "flow cytometry"
