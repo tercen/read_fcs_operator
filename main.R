@@ -6,6 +6,7 @@ suppressPackageStartupMessages({
   library(base64enc)
   library(tidyr)
   library(data.table)
+  library(knitr)
 })
 
 source("./utils.R")
@@ -75,7 +76,7 @@ event_table <- df_out %>%
   distinct() %>%
   mutate(filename = names(fcs)[fileId]) %>%
   select(-fileId) %>%
-  as_relation()
+  as_relation(relation_name = "Observations")
 
 if(do.gather) {
   expression_table <- df_out %>% 
@@ -118,12 +119,12 @@ if(bad_description) {
 }
 
 rel_out <- expression_table %>% 
-  as_relation %>%
+  as_relation(relation_name = "Measurements") %>%
   left_join_relation(event_table, "event_id", "event_id")
 
 ## Output marker annotation table
 if(do.gather) {
-  rel_out <- rel_out %>% left_join_relation(marker_table %>% as_relation(), "channel_id", "channel_id")
+  rel_out <- rel_out %>% left_join_relation(marker_table %>% as_relation(relation_name = "Variables"), "channel_id", "channel_id")
 }
 upload_df(
   marker_table,
@@ -133,13 +134,36 @@ upload_df(
   suffix = paste0(files$docname, format(Sys.time(), "-%D-%H:%M:%S"))
 )
 
+df_summ <- df_out %>% group_by(fileId) %>% 
+  summarise(Events = n()) %>%
+  mutate(filename = names(fcs)[fileId]) %>%
+  select(-fileId)
+
+md_output <- c(
+  "### Uploaded Data Summary",
+  "",
+  paste("\nNumber of files:", nrow(df_summ)),
+  paste("\nNumber of channels:", nrow(names.map)),
+  paste("\nTotal number of observations:", sum(df_summ$Events)),
+  "",
+  "### Summary table",
+  "",
+  knitr::kable(df_summ)
+)
+tmp <- tempfile(fileext = ".md")
+on.exit(unlink(tmp))
+cat(md_output, sep = "\n", file = tmp)
+df_summary <- file_to_tercen(tmp, filename = "FCS_summary.md") %>%
+  mutate(mimetype = "text/markdown")
+rel_summary <- df_summary %>% as_relation(relation_name = "Summary") %>% as_join_operator(list(), list())
 if(!output.spill) {
   ctx$log(message = "No built-in compensation matrices found.")
-  rel_out %>%
-    as_join_operator(list(), list()) %>%
-    save_relation(ctx)
+  rel_out <- rel_out %>%
+    as_join_operator(list(), list())
+  save_relation(list(rel_out, rel_summary), ctx)
 } else {
-  spill.list <- spill.list %>% as_relation %>% as_join_operator(list(), list())
+  spill.list <- spill.list %>% as_relation(relation_name = "Compensation") %>% as_join_operator(list(), list())
   rel_out <- rel_out %>% as_join_operator(list(), list()) 
-  save_relation(list(rel_out, spill.list), ctx)
+  save_relation(list(rel_out, spill.list, rel_summary), ctx)
 }
+
