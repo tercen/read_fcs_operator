@@ -3,7 +3,7 @@
   "name": "test_1",
   "namespace": "ds0",
   "inputDataUri": "test_1_in.csv",
-  "outputDataUri": ["test_1_out_1.csv", "test_1_out_3.csv", "test_1_out_2.csv"],
+  "outputDataUri": ["test_1_out_1.csv", "test_1_out_3.csv", "test_1_out_2.csv", "test_1_out_4.csv"],
   "columns": [
     "documentId"
   ],
@@ -22,5 +22,6 @@
     }
   ],
   "inputFileUris": ["fcs_test.zip"],
-  "absTol": 1e-06
+  "absTol": 1e-06,
+  "skipColumns": [".content"]
 }
