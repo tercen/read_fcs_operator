@@ -3,30 +3,37 @@
     "Version": "4.0.4",
     "Repositories": [
       {
+        "Name": "BioCsoft",
+        "URL": "https://bioconductor.org/packages/3.12/bioc"
+      },
+      {
+        "Name": "BioCann",
+        "URL": "https://bioconductor.org/packages/3.12/data/annotation"
+      },
+      {
+        "Name": "BioCexp",
+        "URL": "https://bioconductor.org/packages/3.12/data/experiment"
+      },
+      {
+        "Name": "BioCworkflows",
+        "URL": "https://bioconductor.org/packages/3.12/workflows"
+      },
+      {
+        "Name": "BioCbooks",
+        "URL": "https://bioconductor.org/packages/3.12/books"
+      },
+      {
         "Name": "TERCEN",
         "URL": "https://cran.tercen.com/api/v1/rlib/tercen"
       },
       {
         "Name": "CRAN",
         "URL": "https://cran.tercen.com/api/v1/rlib/CRAN"
-      },
-      {
-        "Name": "BioCsoft",
-        "URL": "https://cran.tercen.com/api/v1/rlib/BioCsoft-3.12"
-      },
-      {
-        "Name": "BioCann",
-        "URL": "https://cran.tercen.com/api/v1/rlib/BioCann-3.12"
-      },
-      {
-        "Name": "BioCexp",
-        "URL": "https://cran.tercen.com/api/v1/rlib/BioCexp-3.12"
-      },
-      {
-        "Name": "BioCworkflows",
-        "URL": "https://cran.tercen.com/api/v1/rlib/BioCworkflows-3.12"
       }
     ]
+  },
+  "Bioconductor": {
+    "Version": "3.12"
   },
   "Packages": {
     "BH": {
@@ -34,8 +41,7 @@
       "Version": "1.75.0-0",
       "Source": "Repository",
       "Repository": "RSPM",
-      "Hash": "e4c04affc2cac20c8fec18385cd14691",
-      "Requirements": []
+      "Hash": "e4c04affc2cac20c8fec18385cd14691"
     },
     "Biobase": {
       "Package": "Biobase",
@@ -45,10 +51,13 @@
       "git_branch": "RELEASE_3_12",
       "git_last_commit": "9927f90",
       "git_last_commit_date": "2020-10-27",
-      "Hash": "f49586e579b712b7e55253aba0c9bc21",
       "Requirements": [
-        "BiocGenerics"
-      ]
+        "BiocGenerics",
+        "R",
+        "methods",
+        "utils"
+      ],
+      "Hash": "f49586e579b712b7e55253aba0c9bc21"
     },
     "BiocGenerics": {
       "Package": "BiocGenerics",
@@ -58,24 +67,35 @@
       "git_branch": "RELEASE_3_12",
       "git_last_commit": "0b1c4b9",
       "git_last_commit_date": "2021-04-16",
-      "Hash": "f628c51eadc74ffd838b801cd22d589a",
-      "Requirements": []
+      "Requirements": [
+        "R",
+        "graphics",
+        "methods",
+        "parallel",
+        "stats",
+        "utils"
+      ],
+      "Hash": "f628c51eadc74ffd838b801cd22d589a"
     },
     "BiocManager": {
       "Package": "BiocManager",
-      "Version": "1.30.18",
+      "Version": "1.30.22",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "b1a93bed5debda5775636086fdca017b",
-      "Requirements": []
+      "Requirements": [
+        "utils"
+      ],
+      "Hash": "d57e43105a1aa9cb54fdb4629725acb1"
     },
     "R6": {
       "Package": "R6",
       "Version": "2.5.0",
       "Source": "Repository",
       "Repository": "RSPM",
-      "Hash": "b203113193e70978a696b2809525649d",
-      "Requirements": []
+      "Requirements": [
+        "R"
+      ],
+      "Hash": "b203113193e70978a696b2809525649d"
     },
     "RProtoBufLib": {
       "Package": "RProtoBufLib",
@@ -85,34 +105,42 @@
       "git_branch": "RELEASE_3_12",
       "git_last_commit": "28d99c5",
       "git_last_commit_date": "2020-10-27",
-      "Hash": "13cee985e2b760ab2c9d146fc917d57f",
-      "Requirements": []
+      "Hash": "13cee985e2b760ab2c9d146fc917d57f"
     },
     "Rcpp": {
       "Package": "Rcpp",
       "Version": "1.0.6",
       "Source": "Repository",
       "Repository": "RSPM",
-      "Hash": "dbb5e436998a7eba5a9d682060533338",
-      "Requirements": []
+      "Requirements": [
+        "methods",
+        "utils"
+      ],
+      "Hash": "dbb5e436998a7eba5a9d682060533338"
     },
     "RcppArmadillo": {
       "Package": "RcppArmadillo",
-      "Version": "0.11.2.4.0",
+      "Version": "0.12.6.6.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "796805fe55a25e42b5e0aeefacc041dc",
       "Requirements": [
-        "Rcpp"
-      ]
+        "R",
+        "Rcpp",
+        "methods",
+        "stats",
+        "utils"
+      ],
+      "Hash": "d2b60e0a15d73182a3a766ff0a7d0d7f"
     },
     "RcppParallel": {
       "Package": "RcppParallel",
-      "Version": "5.1.5",
+      "Version": "5.1.7",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "f3e94e34ff656a7c8336ce01207bc2b8",
-      "Requirements": []
+      "Requirements": [
+        "R"
+      ],
+      "Hash": "a45594a00f5dbb073d5ec9f48592a08a"
     },
     "Rhdf5lib": {
       "Package": "Rhdf5lib",
@@ -122,8 +150,10 @@
       "git_branch": "RELEASE_3_12",
       "git_last_commit": "cf464f4",
       "git_last_commit_date": "2021-01-26",
-      "Hash": "7dc9be3558a910226d64a2040520dc7f",
-      "Requirements": []
+      "Requirements": [
+        "R"
+      ],
+      "Hash": "7dc9be3558a910226d64a2040520dc7f"
     },
     "S4Vectors": {
       "Package": "S4Vectors",
@@ -133,63 +163,88 @@
       "git_branch": "RELEASE_3_12",
       "git_last_commit": "994cb7e",
       "git_last_commit_date": "2020-12-08",
-      "Hash": "f558c55a285751bd72af11d2bb853521",
       "Requirements": [
-        "BiocGenerics"
-      ]
+        "BiocGenerics",
+        "R",
+        "methods",
+        "stats",
+        "stats4",
+        "utils"
+      ],
+      "Hash": "f558c55a285751bd72af11d2bb853521"
     },
     "askpass": {
       "Package": "askpass",
       "Version": "1.1",
       "Source": "Repository",
       "Repository": "RSPM",
-      "Hash": "e8a22846fff485f0be3770c2da758713",
       "Requirements": [
         "sys"
-      ]
+      ],
+      "Hash": "e8a22846fff485f0be3770c2da758713"
     },
     "assertthat": {
       "Package": "assertthat",
       "Version": "0.2.1",
       "Source": "Repository",
       "Repository": "RSPM",
-      "Hash": "50c838a310445e954bc13f26f26a6ecf",
-      "Requirements": []
+      "Requirements": [
+        "tools"
+      ],
+      "Hash": "50c838a310445e954bc13f26f26a6ecf"
     },
     "base64enc": {
       "Package": "base64enc",
       "Version": "0.1-3",
       "Source": "Repository",
       "Repository": "RSPM",
-      "Hash": "543776ae6848fde2f48ff3816d0628bc",
-      "Requirements": []
+      "Requirements": [
+        "R"
+      ],
+      "Hash": "543776ae6848fde2f48ff3816d0628bc"
     },
     "cli": {
       "Package": "cli",
       "Version": "2.3.1",
       "Source": "Repository",
       "Repository": "RSPM",
-      "Hash": "3e3f28efcadfda442cd18651fbcbbecf",
       "Requirements": [
+        "R",
         "assertthat",
-        "glue"
-      ]
+        "glue",
+        "methods",
+        "utils"
+      ],
+      "Hash": "3e3f28efcadfda442cd18651fbcbbecf"
     },
     "cpp11": {
       "Package": "cpp11",
       "Version": "0.2.7",
       "Source": "Repository",
       "Repository": "RSPM",
-      "Hash": "730eebcc741a5c36761f7d4d0f5e37b8",
-      "Requirements": []
+      "Hash": "730eebcc741a5c36761f7d4d0f5e37b8"
     },
     "crayon": {
       "Package": "crayon",
       "Version": "1.4.1",
       "Source": "Repository",
       "Repository": "RSPM",
-      "Hash": "e75525c55c70e5f4f78c9960a4b402e9",
-      "Requirements": []
+      "Requirements": [
+        "grDevices",
+        "methods",
+        "utils"
+      ],
+      "Hash": "e75525c55c70e5f4f78c9960a4b402e9"
+    },
+    "curl": {
+      "Package": "curl",
+      "Version": "4.3",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Requirements": [
+        "R"
+      ],
+      "Hash": "2b7d10581cc730804e9ed178c8374bd6"
     },
     "cytolib": {
       "Package": "cytolib",
@@ -199,60 +254,70 @@
       "git_branch": "RELEASE_3_12",
       "git_last_commit": "fb08852",
       "git_last_commit_date": "2021-01-16",
-      "Hash": "a845d719d5277f063a6dcea2f6d0d7d9",
       "Requirements": [
         "BH",
+        "R",
         "RProtoBufLib",
         "Rcpp",
         "RcppArmadillo",
         "RcppParallel",
         "Rhdf5lib"
-      ]
+      ],
+      "Hash": "a845d719d5277f063a6dcea2f6d0d7d9"
     },
     "data.table": {
       "Package": "data.table",
       "Version": "1.14.0",
       "Source": "Repository",
       "Repository": "RSPM",
-      "Hash": "d1b8b1a821ee564a3515fa6c6d5c52dc",
-      "Requirements": []
+      "Requirements": [
+        "R",
+        "methods"
+      ],
+      "Hash": "d1b8b1a821ee564a3515fa6c6d5c52dc"
     },
     "dplyr": {
       "Package": "dplyr",
       "Version": "1.0.5",
       "Source": "Repository",
       "Repository": "RSPM",
-      "Hash": "d0d76c11ec807eb3f000eba4e3eb0f68",
       "Requirements": [
+        "R",
         "R6",
         "ellipsis",
         "generics",
         "glue",
         "lifecycle",
         "magrittr",
+        "methods",
         "rlang",
         "tibble",
         "tidyselect",
+        "utils",
         "vctrs"
-      ]
+      ],
+      "Hash": "d0d76c11ec807eb3f000eba4e3eb0f68"
     },
     "ellipsis": {
       "Package": "ellipsis",
       "Version": "0.3.1",
       "Source": "Repository",
       "Repository": "RSPM",
-      "Hash": "fd2844b3a43ae2d27e70ece2df1b4e2a",
       "Requirements": [
+        "R",
         "rlang"
-      ]
+      ],
+      "Hash": "fd2844b3a43ae2d27e70ece2df1b4e2a"
     },
     "fansi": {
       "Package": "fansi",
       "Version": "0.4.2",
       "Source": "Repository",
       "Repository": "RSPM",
-      "Hash": "fea074fb67fe4c25d47ad09087da847d",
-      "Requirements": []
+      "Requirements": [
+        "R"
+      ],
+      "Hash": "fea074fb67fe4c25d47ad09087da847d"
     },
     "flowCore": {
       "Package": "flowCore",
@@ -262,86 +327,134 @@
       "git_branch": "RELEASE_3_12",
       "git_last_commit": "86a9aca",
       "git_last_commit_date": "2020-10-27",
-      "Hash": "14bcb20d63e372d1e308244a0bb10d82",
       "Requirements": [
         "BH",
         "Biobase",
         "BiocGenerics",
+        "R",
         "RProtoBufLib",
         "Rcpp",
         "RcppArmadillo",
         "S4Vectors",
         "cytolib",
-        "matrixStats"
-      ]
+        "grDevices",
+        "graphics",
+        "matrixStats",
+        "methods",
+        "stats",
+        "stats4",
+        "utils"
+      ],
+      "Hash": "14bcb20d63e372d1e308244a0bb10d82"
     },
     "generics": {
       "Package": "generics",
       "Version": "0.1.0",
       "Source": "Repository",
       "Repository": "RSPM",
-      "Hash": "4d243a9c10b00589889fe32314ffd902",
-      "Requirements": []
+      "Requirements": [
+        "R",
+        "methods"
+      ],
+      "Hash": "4d243a9c10b00589889fe32314ffd902"
     },
     "glue": {
       "Package": "glue",
       "Version": "1.4.2",
       "Source": "Repository",
       "Repository": "RSPM",
-      "Hash": "6efd734b14c6471cfe443345f3e35e29",
-      "Requirements": []
+      "Requirements": [
+        "R",
+        "methods"
+      ],
+      "Hash": "6efd734b14c6471cfe443345f3e35e29"
+    },
+    "httr": {
+      "Package": "httr",
+      "Version": "1.4.2",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Requirements": [
+        "R",
+        "R6",
+        "curl",
+        "jsonlite",
+        "mime",
+        "openssl"
+      ],
+      "Hash": "a525aba14184fec243f9eaec62fbed43"
+    },
+    "jsonlite": {
+      "Package": "jsonlite",
+      "Version": "1.7.2",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Requirements": [
+        "methods"
+      ],
+      "Hash": "98138e0994d41508c7a6b84a0600cfcb"
     },
     "lifecycle": {
       "Package": "lifecycle",
       "Version": "1.0.0",
       "Source": "Repository",
       "Repository": "RSPM",
-      "Hash": "3471fb65971f1a7b2d4ae7848cf2db8d",
       "Requirements": [
+        "R",
         "glue",
         "rlang"
-      ]
+      ],
+      "Hash": "3471fb65971f1a7b2d4ae7848cf2db8d"
     },
     "magrittr": {
       "Package": "magrittr",
       "Version": "2.0.1",
       "Source": "Repository",
       "Repository": "RSPM",
-      "Hash": "41287f1ac7d28a92f0a286ed507928d3",
-      "Requirements": []
+      "Hash": "41287f1ac7d28a92f0a286ed507928d3"
     },
     "matrixStats": {
       "Package": "matrixStats",
-      "Version": "0.62.0",
+      "Version": "1.2.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "36ad89a805c436c5316c22490079da67",
-      "Requirements": []
+      "Requirements": [
+        "R"
+      ],
+      "Hash": "33a3ca9e732b57244d14f5d732ffc9eb"
+    },
+    "mime": {
+      "Package": "mime",
+      "Version": "0.10",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Requirements": [
+        "tools"
+      ],
+      "Hash": "26fa77e707223e1ce042b2b5d09993dc"
     },
     "mtercen": {
       "Package": "mtercen",
       "Version": "1.0.8",
       "Source": "Repository",
       "Repository": "TERCEN",
-      "Hash": "27b03b2685b9424f08521ea09d24860e",
-      "Requirements": []
+      "Hash": "27b03b2685b9424f08521ea09d24860e"
     },
     "openssl": {
       "Package": "openssl",
       "Version": "1.4.3",
       "Source": "Repository",
       "Repository": "RSPM",
-      "Hash": "a399e4773075fc2375b71f45fca186c4",
       "Requirements": [
         "askpass"
-      ]
+      ],
+      "Hash": "a399e4773075fc2375b71f45fca186c4"
     },
     "pillar": {
       "Package": "pillar",
       "Version": "1.5.1",
       "Source": "Repository",
       "Repository": "RSPM",
-      "Hash": "24622aa4a0d3de3463c34513edca99b2",
       "Requirements": [
         "cli",
         "crayon",
@@ -350,114 +463,135 @@
         "lifecycle",
         "rlang",
         "utf8",
+        "utils",
         "vctrs"
-      ]
+      ],
+      "Hash": "24622aa4a0d3de3463c34513edca99b2"
     },
     "pkgconfig": {
       "Package": "pkgconfig",
       "Version": "2.0.3",
       "Source": "Repository",
       "Repository": "RSPM",
-      "Hash": "01f28d4278f15c76cddbea05899c5d6f",
-      "Requirements": []
+      "Requirements": [
+        "utils"
+      ],
+      "Hash": "01f28d4278f15c76cddbea05899c5d6f"
     },
     "purrr": {
       "Package": "purrr",
       "Version": "0.3.4",
       "Source": "Repository",
       "Repository": "RSPM",
-      "Hash": "97def703420c8ab10d8f0e6c72101e02",
       "Requirements": [
+        "R",
         "magrittr",
         "rlang"
-      ]
+      ],
+      "Hash": "97def703420c8ab10d8f0e6c72101e02"
     },
     "renv": {
       "Package": "renv",
-      "Version": "0.16.0",
+      "Version": "0.17.3",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "c9e8442ab69bc21c9697ecf856c1e6c7",
-      "Requirements": []
+      "Requirements": [
+        "utils"
+      ],
+      "Hash": "4543b8cd233ae25c6aba8548be9e747e"
     },
     "rlang": {
       "Package": "rlang",
       "Version": "0.4.10",
       "Source": "Repository",
       "Repository": "RSPM",
-      "Hash": "599df23c40a4fce9c7b4764f28c37857",
-      "Requirements": []
+      "Requirements": [
+        "R",
+        "utils"
+      ],
+      "Hash": "599df23c40a4fce9c7b4764f28c37857"
+    },
+    "rstudioapi": {
+      "Package": "rstudioapi",
+      "Version": "0.13",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Hash": "06c85365a03fdaf699966cc1d3cf53ea"
     },
     "sys": {
       "Package": "sys",
       "Version": "3.4",
       "Source": "Repository",
       "Repository": "RSPM",
-      "Hash": "b227d13e29222b4574486cfcbde077fa",
-      "Requirements": []
+      "Hash": "b227d13e29222b4574486cfcbde077fa"
     },
     "teRcenHttp": {
       "Package": "teRcenHttp",
       "Version": "1.0.21",
       "Source": "Repository",
       "Repository": "TERCEN",
-      "Hash": "18e6c920fb7ddb33ea4e265098ca24c9",
-      "Requirements": []
+      "Hash": "18e6c920fb7ddb33ea4e265098ca24c9"
     },
     "tercen": {
       "Package": "tercen",
-      "Version": "0.12.8",
+      "Version": "0.13.6",
       "Source": "Repository",
       "Repository": "TERCEN",
-      "Hash": "b33ed509f38454fcdd234346e83cae05",
       "Requirements": [
         "R6",
+        "base64enc",
         "dplyr",
+        "httr",
         "mtercen",
         "openssl",
+        "rstudioapi",
         "teRcenHttp",
         "tercenApi",
         "tibble",
         "uuid",
         "yaml"
-      ]
+      ],
+      "Hash": "022ce1dc981b0079b566579720fff5a5"
     },
     "tercenApi": {
       "Package": "tercenApi",
-      "Version": "0.12.8",
+      "Version": "0.13.1",
       "Source": "Repository",
       "Repository": "TERCEN",
-      "Hash": "e92d54419184d7f403d082988a3c41c3",
       "Requirements": [
         "R6",
         "teRcenHttp",
         "yaml"
-      ]
+      ],
+      "Hash": "d28333806c621e826e3c1e64e0e6a494"
     },
     "tibble": {
       "Package": "tibble",
       "Version": "3.1.0",
       "Source": "Repository",
       "Repository": "RSPM",
-      "Hash": "4d894a114dbd4ecafeda5074e7c538e6",
       "Requirements": [
+        "R",
         "ellipsis",
         "fansi",
         "lifecycle",
         "magrittr",
+        "methods",
         "pillar",
         "pkgconfig",
         "rlang",
+        "utils",
         "vctrs"
-      ]
+      ],
+      "Hash": "4d894a114dbd4ecafeda5074e7c538e6"
     },
     "tidyr": {
       "Package": "tidyr",
       "Version": "1.1.3",
       "Source": "Repository",
       "Repository": "RSPM",
-      "Hash": "450d7dfaedde58e28586b854eeece4fa",
       "Requirements": [
+        "R",
         "cpp11",
         "dplyr",
         "ellipsis",
@@ -468,58 +602,65 @@
         "rlang",
         "tibble",
         "tidyselect",
+        "utils",
         "vctrs"
-      ]
+      ],
+      "Hash": "450d7dfaedde58e28586b854eeece4fa"
     },
     "tidyselect": {
       "Package": "tidyselect",
       "Version": "1.1.0",
       "Source": "Repository",
       "Repository": "RSPM",
-      "Hash": "6ea435c354e8448819627cf686f66e0a",
       "Requirements": [
+        "R",
         "ellipsis",
         "glue",
         "purrr",
         "rlang",
         "vctrs"
-      ]
+      ],
+      "Hash": "6ea435c354e8448819627cf686f66e0a"
     },
     "utf8": {
       "Package": "utf8",
       "Version": "1.2.1",
       "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "c3ad47dc6da0751f18ed53c4613e3ac7",
-      "Requirements": []
+      "Repository": "RSPM",
+      "Requirements": [
+        "R"
+      ],
+      "Hash": "c3ad47dc6da0751f18ed53c4613e3ac7"
     },
     "uuid": {
       "Package": "uuid",
       "Version": "1.1-0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "f1cb46c157d080b729159d407be83496",
-      "Requirements": []
+      "Requirements": [
+        "R"
+      ],
+      "Hash": "f1cb46c157d080b729159d407be83496"
     },
     "vctrs": {
       "Package": "vctrs",
       "Version": "0.3.7",
       "Source": "Repository",
       "Repository": "RSPM",
-      "Hash": "5540dc30a203a43a1ce5dc6a89532b3b",
       "Requirements": [
+        "R",
         "ellipsis",
         "glue",
         "rlang"
-      ]
+      ],
+      "Hash": "5540dc30a203a43a1ce5dc6a89532b3b"
     },
     "yaml": {
       "Package": "yaml",
       "Version": "2.2.1",
       "Source": "Repository",
       "Repository": "RSPM",
-      "Hash": "2826c5d9efb0a88f657c7a679c7106db",
-      "Requirements": []
+      "Hash": "2826c5d9efb0a88f657c7a679c7106db"
     }
   }
 }

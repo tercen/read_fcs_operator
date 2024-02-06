@@ -74,6 +74,12 @@ get_spill_matrix <- function(data_fcs, separator, ctx) {
     }
     spill.matrix <- spill.matrix[[1]]
     
+    if(keyword(data_fcs)$`$CYT` == "IntelliCyt iQue3") {
+      if(all(!grepl("\\D", colnames(spill.matrix)))) {
+        colnames(spill.matrix) <- colnames(data_fcs)[as.numeric(colnames(spill.matrix))]
+      }
+    }
+    
     if(any(dim(spill.matrix) == 0)) {
       spill.matrix <- NA
     } else {
