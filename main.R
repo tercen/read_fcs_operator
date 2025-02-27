@@ -69,7 +69,7 @@ df_out <- lapply(df, "[[", "data")
 df_out <- mapply(cbind, df_out, "fileId" = fcs, SIMPLIFY = F) %>%
   bind_rows() %>%
   as.data.table() %>%
-  mutate(event_id = seq_len(nrow(.)))
+  mutate(event_id = as.double(seq_len(nrow(.))))
 
 event_table <- df_out %>%
   select(matches(ifelse(do.gather, "[a-zA-Z]", "fileId|event_id"))) %>% 
@@ -85,7 +85,8 @@ if(do.gather) {
       id.vars = c("event_id"),
       value.name = "value", variable.name = "channel_id"
     ) %>%
-    mutate(channel_id = as.integer(channel_id)) %>%
+    mutate(event_id = as.double(event_id)) %>%
+    mutate(channel_id = as.double(channel_id)) %>%
   arrange(event_id, channel_id) %>% 
   as_tibble()
 } else {
@@ -125,14 +126,16 @@ rel_out <- expression_table %>%
 ## Output marker annotation table
 if(do.gather) {
   rel_out <- rel_out %>% left_join_relation(marker_table %>% as_relation(relation_name = "Variables"), "channel_id", "channel_id")
+} else {
+  upload_df(
+    marker_table,
+    ctx,
+    folder_name = "FCS Annotations",
+    prefix = "Channel-Descriptions-",
+    suffix = paste0(files$docname, format(Sys.time(), "-%D-%H:%M:%S"))
+  )
 }
-upload_df(
-  marker_table,
-  ctx,
-  folder_name = "FCS Annotations",
-  prefix = "Channel-Descriptions-",
-  suffix = paste0(files$docname, format(Sys.time(), "-%D-%H:%M:%S"))
-)
+
 
 df_summ <- df_out %>% group_by(fileId) %>% 
   summarise(Events = n()) %>%
@@ -153,8 +156,10 @@ md_output <- c(
 tmp <- tempfile(fileext = ".md")
 on.exit(unlink(tmp))
 cat(md_output, sep = "\n", file = tmp)
+
 df_summary <- file_to_tercen(tmp, filename = "FCS_summary.md") %>%
   mutate(mimetype = "text/markdown")
+
 rel_summary <- df_summary %>% as_relation(relation_name = "Summary") %>% as_join_operator(list(), list())
 if(!output.spill) {
   ctx$log(message = "No built-in compensation matrices found.")
