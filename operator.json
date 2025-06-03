@@ -41,6 +41,23 @@
     "kind": "OperatorSpec",
     "ontologyUri": "https://tercen.com/_ontology/tercen",
     "ontologyVersion": "0.0.1",
-    "inputSpecs": []
+    "inputSpecs": [
+      {
+        "kind": "CrosstabSpec",
+        "metaFactors": [
+          {
+            "kind": "MetaFactor",
+            "name": "documentId",
+            "type": "",
+            "description": "Document ID (single FCS file or zipped set of FCS files)",
+            "ontologyMapping": "page",
+            "crosstabMapping": "row",
+            "cardinality": "1..n",
+            "factors": []
+          }
+        ],
+        "axis": []
+      }
+    ]
   }
 }
