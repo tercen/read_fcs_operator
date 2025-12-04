@@ -113,7 +113,12 @@ process_fcs <- function(data_fcs, do.gather, ungather_pattern) {
   names_map <- tibble(channel_name = colnames(data), channel_description = desc_parameters) %>%
     dplyr::filter(!condx) %>%
     mutate(channel_id = as.double(seq_len(nrow(.)))) %>%
-    mutate(filename = rep_len(basename(data_fcs@description$FILENAME), nrow(.)))
+    mutate(filename = rep_len(basename(data_fcs@description$FILENAME), nrow(.))) %>%
+    mutate(channel_name_description = ifelse(
+      channel_name == channel_description,
+      channel_name,
+      paste0(channel_name, " - ", channel_description)
+    ))
 
   fcs_name = basename(data_fcs@description$FILENAME)
   

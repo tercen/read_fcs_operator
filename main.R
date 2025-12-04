@@ -102,7 +102,7 @@ if(output.spill) {
 names.map <- lapply(df, "[[", "map") %>%
   bind_rows() %>%
   as.data.table() %>%
-  select(channel_name, channel_description, channel_id) %>%
+  select(channel_name, channel_description, channel_name_description, channel_id) %>%
   distinct()
 
 bad_description <- names.map %>% 
