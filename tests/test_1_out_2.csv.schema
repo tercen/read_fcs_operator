@@ -13,6 +13,11 @@
     },
     {
       "kind": "ColumnSchema",
+      "name": "channel_name_description",
+      "type": "string"
+    },
+    {
+      "kind": "ColumnSchema",
       "name": "channel_id",
       "type": "double"
     }
