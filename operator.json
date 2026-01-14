@@ -36,5 +36,28 @@
       "defaultValue": true,
       "description": "truncate_max_range setting from read.FCS function."
     }
-  ]
+  ],
+  "operatorSpec": {
+    "kind": "OperatorSpec",
+    "ontologyUri": "https://tercen.com/_ontology/tercen",
+    "ontologyVersion": "0.0.1",
+    "inputSpecs": [
+      {
+        "kind": "CrosstabSpec",
+        "metaFactors": [
+          {
+            "kind": "MetaFactor",
+            "name": "Document ID",
+            "type": "string",
+            "description": "Document ID(s) of FCS file(s).",
+            "ontologyMapping": "document",
+            "crosstabMapping": "column",
+            "cardinality": "1..n",
+            "factors": []
+          }
+        ]
+      }
+    ],
+    "outputSpecs": []
+  }
 }
