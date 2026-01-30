@@ -61,6 +61,7 @@
     "outputSpecsV2": [
       {
         "kind": "OperatorJoinSpec",
+        "description": "FCS reader - outputs event data and summary file",
         "joinOperators": [
           {
             "kind": "JoinOperator",
@@ -81,6 +82,35 @@
                 {
                   "kind": "Attribute",
                   "name": "filename",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "JoinOperator",
+            "joinType": "left",
+            "leftPair": {
+              "kind": "ColumnPair",
+              "lColumns": [],
+              "rColumns": []
+            },
+            "rightRelation": {
+              "kind": "TableRelation",
+              "attributes": [
+                {
+                  "kind": "Attribute",
+                  "name": "filename",
+                  "type": "string"
+                },
+                {
+                  "kind": "Attribute",
+                  "name": "mimetype",
+                  "type": "string"
+                },
+                {
+                  "kind": "Attribute",
+                  "name": ".content",
                   "type": "string"
                 }
               ]
