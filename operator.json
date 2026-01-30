@@ -60,58 +60,147 @@
     ],
     "outputSpecsV2": [
       {
-        "kind": "OperatorJoinSpec",
-        "description": "FCS reader - outputs event data and summary file",
-        "joinOperators": [
+        "kind": "ConditionalJoinSpec",
+        "description": "Output varies based on gather_channels property",
+        "alternatives": [
           {
-            "kind": "JoinOperator",
-            "joinType": "left",
-            "leftPair": {
-              "kind": "ColumnPair",
-              "lColumns": [],
-              "rColumns": []
-            },
-            "rightRelation": {
-              "kind": "TableRelation",
-              "attributes": [
+            "condition": "gather_channels = true (long/gathered format)",
+            "joinSpec": {
+              "kind": "OperatorJoinSpec",
+              "joinOperators": [
                 {
-                  "kind": "Attribute",
-                  "name": "event_id",
-                  "type": "double"
+                  "kind": "JoinOperator",
+                  "joinType": "left",
+                  "leftPair": {
+                    "kind": "ColumnPair",
+                    "lColumns": [],
+                    "rColumns": []
+                  },
+                  "rightRelation": {
+                    "kind": "TableRelation",
+                    "attributes": [
+                      {
+                        "kind": "Attribute",
+                        "name": "event_id",
+                        "type": "double"
+                      },
+                      {
+                        "kind": "Attribute",
+                        "name": "channel_id",
+                        "type": "double"
+                      },
+                      {
+                        "kind": "Attribute",
+                        "name": "value",
+                        "type": "double"
+                      },
+                      {
+                        "kind": "Attribute",
+                        "name": "channel_name",
+                        "type": "string"
+                      },
+                      {
+                        "kind": "Attribute",
+                        "name": "channel_description",
+                        "type": "string"
+                      },
+                      {
+                        "kind": "Attribute",
+                        "name": "filename",
+                        "type": "string"
+                      }
+                    ]
+                  }
                 },
                 {
-                  "kind": "Attribute",
-                  "name": "filename",
-                  "type": "string"
+                  "kind": "JoinOperator",
+                  "joinType": "left",
+                  "leftPair": {
+                    "kind": "ColumnPair",
+                    "lColumns": [],
+                    "rColumns": []
+                  },
+                  "rightRelation": {
+                    "kind": "TableRelation",
+                    "attributes": [
+                      {
+                        "kind": "Attribute",
+                        "name": "filename",
+                        "type": "string"
+                      },
+                      {
+                        "kind": "Attribute",
+                        "name": "mimetype",
+                        "type": "string"
+                      },
+                      {
+                        "kind": "Attribute",
+                        "name": ".content",
+                        "type": "string"
+                      }
+                    ]
+                  }
                 }
               ]
             }
           },
           {
-            "kind": "JoinOperator",
-            "joinType": "left",
-            "leftPair": {
-              "kind": "ColumnPair",
-              "lColumns": [],
-              "rColumns": []
-            },
-            "rightRelation": {
-              "kind": "TableRelation",
-              "attributes": [
+            "condition": "gather_channels = false (wide format, default)",
+            "joinSpec": {
+              "kind": "OperatorJoinSpec",
+              "joinOperators": [
                 {
-                  "kind": "Attribute",
-                  "name": "filename",
-                  "type": "string"
+                  "kind": "JoinOperator",
+                  "joinType": "left",
+                  "leftPair": {
+                    "kind": "ColumnPair",
+                    "lColumns": [],
+                    "rColumns": []
+                  },
+                  "rightRelation": {
+                    "kind": "TableRelation",
+                    "attributes": [
+                      {
+                        "kind": "Attribute",
+                        "name": "event_id",
+                        "type": "double"
+                      },
+                      {
+                        "kind": "Attribute",
+                        "name": "filename",
+                        "type": "string"
+                      }
+                    ]
+                  }
                 },
                 {
-                  "kind": "Attribute",
-                  "name": "mimetype",
-                  "type": "string"
-                },
-                {
-                  "kind": "Attribute",
-                  "name": ".content",
-                  "type": "string"
+                  "kind": "JoinOperator",
+                  "joinType": "left",
+                  "leftPair": {
+                    "kind": "ColumnPair",
+                    "lColumns": [],
+                    "rColumns": []
+                  },
+                  "rightRelation": {
+                    "kind": "TableRelation",
+                    "attributes": [
+                      {
+                        "kind": "Attribute",
+                        "name": "filename",
+                        "type": "string"
+                      },
+                      {
+                        "kind": "Attribute",
+                        "name": "mimetype",
+                        "type": "string"
+                      },
+                      {
+                        "kind": "Attribute",
+                        "name": ".content",
+                        "type": "string"
+                      }
+                    ]
+                  }
                 }
               ]
             }
