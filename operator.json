@@ -64,6 +64,7 @@
         "description": "Output varies based on gather_channels property",
         "alternatives": [
           {
+            "kind": "OutputAlternative",
             "condition": "gather_channels = true (long/gathered format)",
             "joinSpec": {
               "kind": "OperatorJoinSpec",
@@ -145,6 +146,7 @@
             }
           },
           {
+            "kind": "OutputAlternative",
             "condition": "gather_channels = false (wide format, default)",
             "joinSpec": {
               "kind": "OperatorJoinSpec",
