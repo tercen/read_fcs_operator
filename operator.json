@@ -161,6 +161,9 @@
                   },
                   "rightRelation": {
                     "kind": "TableRelation",
+                    "meta_data": [
+                      {"kind": "Pair", "key": "allowAdditionalAttributes", "value": "true"}
+                    ],
                     "attributes": [
                       {
                         "kind": "Attribute",
