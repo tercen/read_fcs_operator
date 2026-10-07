@@ -1,40 +1,54 @@
 {
   "name": "FCS",
-  "description": "Imports a Flow Cytometry Standard file (.fcs).",
+  "description": "Imports Flow Cytometry Standard files (.fcs / .lmd, or a zip of them) into Tercen. Rust port of tercen/read_fcs_operator: same output tables (event/channel/value with channel and observation annotations), FCS 2.0/3.0/3.1, float/double/integer data, multi-core decoding, streaming result upload. Parity: exact match of the R operator's fcs_test.zip golden (event/channel/value, Variables, Observations); reader agrees with fcsparser and flowCore to <= 1e-6 on FlowRepository FR-FCM-ZZZ4.",
   "tags": [
     "import",
     "flow cytometry"
   ],
+  "communicationProtocol": "grpc",
   "authors": [
     "tercen"
   ],
   "urls": [
     "https://github.com/tercen/read_fcs_operator"
   ],
+  "container": "ghcr.io/tercen/read_fcs_operator:3.0.0",
   "properties": [
     {
       "kind": "DoubleProperty",
       "name": "which.lines",
       "defaultValue": -1,
-      "description": "Indicate the number of lines to be read. If -1, all rows are read, otherwise, a random sample of the size indicated by which.lines is read in"
+      "description": "Number of events to read per file. -1 reads all events; otherwise a random sample of this size is read (seeded, see seed)."
     },
     {
       "kind": "BooleanProperty",
       "name": "gather_channels",
       "defaultValue": false,
-      "description": "Whether to gather data or not."
+      "description": "Gather channels into event_id / channel_id / value (long format) with a Variables table of channel names and descriptions."
     },
     {
       "kind": "StringProperty",
       "name": "ungather_pattern",
       "defaultValue": "time|event",
-      "description": "Specify the pattern used to identify channels that won't be gathered. Case is ignored."
+      "description": "Regular expression (case-insensitive) matching channel names that are kept as observation columns instead of being gathered."
     },
     {
       "kind": "BooleanProperty",
       "name": "truncate_max_range",
       "defaultValue": true,
-      "description": "truncate_max_range setting from read.FCS function."
+      "description": "Clamp values above a channel's $PnR range to $PnR (flowCore truncate_max_range)."
+    },
+    {
+      "kind": "DoubleProperty",
+      "name": "seed",
+      "defaultValue": 42,
+      "description": "Random seed for which.lines sampling. The R operator sampled unseeded."
+    },
+    {
+      "kind": "DoubleProperty",
+      "name": "threads",
+      "defaultValue": 0,
+      "description": "Decoding threads per file; 0 = all available cores."
     }
   ],
   "operatorSpec": {
@@ -49,7 +63,7 @@
             "kind": "MetaFactor",
             "name": "Document ID",
             "type": "string",
-            "description": "Document ID(s) of FCS file(s).",
+            "description": "Document ID of the FCS file or zip of FCS files.",
             "ontologyMapping": "document",
             "crosstabMapping": "column",
             "cardinality": "1..n",
@@ -79,16 +93,23 @@
                   },
                   "rightRelation": {
                     "kind": "TableRelation",
+                    "meta_data": [
+                      {
+                        "kind": "Pair",
+                        "key": "allowAdditionalAttributes",
+                        "value": "true"
+                      }
+                    ],
                     "attributes": [
                       {
                         "kind": "Attribute",
                         "name": "event_id",
-                        "type": "double"
+                        "type": "int32"
                       },
                       {
                         "kind": "Attribute",
                         "name": "channel_id",
-                        "type": "double"
+                        "type": "int32"
                       },
                       {
                         "kind": "Attribute",
@@ -104,6 +125,16 @@
                         "kind": "Attribute",
                         "name": "channel_description",
                         "type": "string"
+                      },
+                      {
+                        "kind": "Attribute",
+                        "name": "channel_name_description",
+                        "type": "string"
+                      },
+                      {
+                        "kind": "Attribute",
+                        "name": "random_sequence",
+                        "type": "int32"
                       },
                       {
                         "kind": "Attribute",
@@ -162,13 +193,22 @@
                   "rightRelation": {
                     "kind": "TableRelation",
                     "meta_data": [
-                      {"kind": "Pair", "key": "allowAdditionalAttributes", "value": "true"}
+                      {
+                        "kind": "Pair",
+                        "key": "allowAdditionalAttributes",
+                        "value": "true"
+                      }
                     ],
                     "attributes": [
                       {
                         "kind": "Attribute",
                         "name": "event_id",
-                        "type": "double"
+                        "type": "int32"
+                      },
+                      {
+                        "kind": "Attribute",
+                        "name": "random_sequence",
+                        "type": "int32"
                       },
                       {
                         "kind": "Attribute",

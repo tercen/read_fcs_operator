@@ -19,12 +19,17 @@
     {
       "kind": "ColumnSchema",
       "name": "event_id",
-      "type": "double"
+      "type": "int32"
     },
     {
       "kind": "ColumnSchema",
       "name": "filename",
       "type": "string"
+    },
+    {
+      "kind": "ColumnSchema",
+      "name": "random_sequence",
+      "type": "int32"
     }
   ]
 }
