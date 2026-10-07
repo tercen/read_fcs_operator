@@ -12,7 +12,7 @@
   "urls": [
     "https://github.com/tercen/read_fcs_operator"
   ],
-  "container": "ghcr.io/tercen/read_fcs_rust_operator:0.1.6",
+  "container": "ghcr.io/tercen/read_fcs_operator:3.0.0",
   "properties": [
     {
       "kind": "DoubleProperty",
