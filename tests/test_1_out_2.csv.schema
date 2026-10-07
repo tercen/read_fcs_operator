@@ -19,7 +19,7 @@
     {
       "kind": "ColumnSchema",
       "name": "channel_id",
-      "type": "double"
+      "type": "int32"
     }
   ]
 }

@@ -1,0 +1,9 @@
+target/
+parity/
+fixtures/
+dev/
+tests/
+.git/
+.github/
+*.md
+!operator.json

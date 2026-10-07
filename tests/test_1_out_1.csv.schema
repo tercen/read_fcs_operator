@@ -4,12 +4,12 @@
     {
       "kind": "ColumnSchema",
       "name": "event_id",
-      "type": "double"
+      "type": "int32"
     },
     {
       "kind": "ColumnSchema",
       "name": "channel_id",
-      "type": "double"
+      "type": "int32"
     },
     {
       "kind": "ColumnSchema",

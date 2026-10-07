@@ -1,7 +1,9 @@
-.idea
-.Rproj.user
-.Rhistory
-.RData
-.Ruserdata
-workspace.R
-test.fcs
+/target
+/fixtures/
+/parity/fr/
+/parity/ref/
+/parity/refR/
+/parity/rust/
+*.csv.err
+/dev/studio.env
+/dev/spectral_ids.env
