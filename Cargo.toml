@@ -1,6 +1,6 @@
 [package]
 name = "read_fcs_operator"
-version = "3.0.0"
+version = "3.0.1"
 edition = "2024"
 description = "Read FCS files (2.0/3.0/3.1) into Tercen — Rust port of tercen/read_fcs_operator (R, flowCore)."
 license = "Apache-2.0"

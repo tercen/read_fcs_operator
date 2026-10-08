@@ -2512,7 +2512,7 @@ dependencies = [
 
 [[package]]
 name = "read_fcs_operator"
-version = "3.0.0"
+version = "3.0.1"
 dependencies = [
  "anyhow",
  "base64",
