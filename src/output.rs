@@ -83,10 +83,19 @@ impl Settings {
         }
     }
     pub fn ungather_regex(&self) -> Result<Regex> {
-        regex::RegexBuilder::new(&self.ungather_pattern)
-            .case_insensitive(true)
-            .build()
-            .with_context(|| format!("invalid ungather_pattern regex '{}'", self.ungather_pattern))
+        let build = |p: &str| regex::RegexBuilder::new(p).case_insensitive(true).build();
+        let p = self.ungather_pattern.as_str();
+        match build(p) {
+            Ok(r) => Ok(r),
+            // R's `grepl()` (TRE, POSIX extended) reads a repetition operator with nothing before
+            // it as a literal character; the regex crate refuses it. Workflows saved with 2.x
+            // carry such patterns (the immunophenotyping template's `?!(...)`, a lookahead that
+            // TRE never supported, so in R it matches nothing): read them the way R did.
+            Err(e) if p.starts_with(['?', '*', '+', '{']) => build(&format!("\\{p}"))
+                .map_err(|_| e)
+                .with_context(|| format!("invalid ungather_pattern regex '{p}'")),
+            Err(e) => Err(e).with_context(|| format!("invalid ungather_pattern regex '{p}'")),
+        }
     }
 }
 
@@ -1012,6 +1021,34 @@ pub fn describe(plan: &Plan) -> String {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn a_leading_quantifier_is_a_literal_as_in_r() {
+        // R 4.x: grepl(p, x, ignore.case = TRUE) is TRUE only for "?!Time".
+        let p = "?!(.ci|Time|FSC[-_]?[AWH]?|SSC[-_]?[AWH]??|SSC-B[-_]?[AWH]?|Width|Height|Area|Event[-_]?ID|Trigger[-_]?Pulse)";
+        let o = super::Settings {
+            ungather_pattern: p.into(),
+            ..Default::default()
+        };
+        let re = o.ungather_regex().expect("R accepts this pattern");
+        for (name, r) in [
+            ("Time", false),
+            ("FSC-A", false),
+            ("SSC-A", false),
+            ("CD3", false),
+            ("Event_length", false),
+            ("event_id", false),
+            ("Width", false),
+            ("?!Time", true),
+        ] {
+            assert_eq!(re.is_match(name), r, "{name}");
+        }
+        let bad = super::Settings {
+            ungather_pattern: "(unclosed".into(),
+            ..Default::default()
+        };
+        assert!(bad.ungather_regex().is_err());
+    }
+
     use super::*;
 
     fn p(name: &str, desc: &str) -> Param {
