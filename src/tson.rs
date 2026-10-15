@@ -157,6 +157,28 @@ impl<W: Write> TsonWriter<W> {
         self.i32_list_header(v.len())?;
         self.i32_chunk(v)
     }
+    /// Header of an id column (`event_id`, `channel_id`): int32 when `int`, else double (what
+    /// read_fcs 2.x wrote). Fill it with [`Self::id_chunk`].
+    pub fn id_list_header(&mut self, int: bool, n: usize) -> io::Result<()> {
+        if int {
+            self.i32_list_header(n)
+        } else {
+            self.f64_list_header(n)
+        }
+    }
+    /// Append ids to a list opened by [`Self::id_list_header`] with the same `int`.
+    pub fn id_chunk(&mut self, int: bool, v: &[i32]) -> io::Result<()> {
+        if int {
+            self.i32_chunk(v)
+        } else {
+            let d: Vec<f64> = v.iter().map(|&x| f64::from(x)).collect();
+            self.f64_chunk(&d)
+        }
+    }
+    pub fn id_list(&mut self, int: bool, v: &[i32]) -> io::Result<()> {
+        self.id_list_header(int, v.len())?;
+        self.id_chunk(int, v)
+    }
     /// String list: byte count, then each string NUL-terminated.
     pub fn str_list<S: AsRef<str>>(&mut self, v: &[S]) -> io::Result<()> {
         self.u8(LIST_STRING_TYPE)?;

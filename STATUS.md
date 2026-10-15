@@ -1,5 +1,13 @@
 # Status
 
+## 3.1.0 (2026-10-15) — `integer_ids`: double ids by default again
+
+3.0.x broke workflows built on read_fcs 2.x: `event_id` / `channel_id` became `int32`, and Tercen
+matches a saved factor by name and type, so every downstream step using them failed. 3.1.0 writes
+them as `double` (2.x's type) unless `integer_ids = true`. Values are unchanged, and `fileId` and
+`random_sequence` stay `int32`. Workflows built on 3.0.x set `integer_ids = true` when upgrading.
+The platform test runs both: `test.json` (double) and `test_2.json` (int32).
+
 ## 0.1.5 (2026-09-27) — `random_sequence`: the sampling draw as a column
 
 Observations gains `random_sequence` (int32): each event's 1-based rank in a seeded random order

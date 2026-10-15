@@ -49,6 +49,12 @@
       "name": "threads",
       "defaultValue": 0,
       "description": "Decoding threads per file; 0 = all available cores."
+    },
+    {
+      "kind": "BooleanProperty",
+      "name": "integer_ids",
+      "defaultValue": false,
+      "description": "Write event_id and channel_id as int32 instead of double. Off (double) matches read_fcs 2.x, so workflows built on it keep working: Tercen matches a factor by name and type. On makes a gathered result about a third smaller (faster upload); use it for new workflows, and in workflows built on read_fcs 3.0.x, which wrote int32."
     }
   ],
   "operatorSpec": {
@@ -75,7 +81,7 @@
     "outputSpecsV2": [
       {
         "kind": "ConditionalJoinSpec",
-        "description": "Output varies based on gather_channels property",
+        "description": "Output varies based on gather_channels property. event_id and channel_id are double as declared, or int32 when integer_ids is true.",
         "alternatives": [
           {
             "kind": "OutputAlternative",
@@ -104,12 +110,12 @@
                       {
                         "kind": "Attribute",
                         "name": "event_id",
-                        "type": "int32"
+                        "type": "double"
                       },
                       {
                         "kind": "Attribute",
                         "name": "channel_id",
-                        "type": "int32"
+                        "type": "double"
                       },
                       {
                         "kind": "Attribute",
@@ -203,7 +209,7 @@
                       {
                         "kind": "Attribute",
                         "name": "event_id",
-                        "type": "int32"
+                        "type": "double"
                       },
                       {
                         "kind": "Attribute",

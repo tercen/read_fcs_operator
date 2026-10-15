@@ -115,6 +115,7 @@ pub fn settings_from_ctx(ctx: &ContextBase) -> Result<Settings> {
         truncate_max_range: pr.get_bool("truncate_max_range", true),
         seed: seed as u64,
         threads: threads as usize,
+        integer_ids: pr.get_bool("integer_ids", false),
         ..Settings::default()
     };
     s.ungather_regex()?; // validate early
