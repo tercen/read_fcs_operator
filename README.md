@@ -5,15 +5,28 @@
 `r-legacy-2.6.0` tag). It was developed as `tercen/read_fcs_rust_operator` and imported here as
 one commit; its development history stays in that repository.
 
-## Changes from 2.x (breaking)
+## Upgrading
 
-- **`event_id` and `channel_id` are `int32`**, not `double`, in every table. Joins against a 2.x
-  result, or a downstream step whose factor type was set from one, must be updated. The integer
-  ids roughly halve the stored size of a cohort-scale result.
+- **From 2.x (R):** use 3.1.0 or later with `integer_ids` off (the default). `event_id` and
+  `channel_id` are `double` as in 2.x, so the workflow's saved factors still resolve. Tercen matches
+  a factor by name *and* type, so a type change breaks every downstream step that uses one of
+  these columns (errors such as `bad relation`, or `attribute not found … event_id … Double`).
+- **From 3.0.x:** 3.0.x wrote both ids as `int32`, so set `integer_ids = true` when upgrading a
+  workflow built on it.
+- **New workflows, cohort scale:** `integer_ids = true` makes a gathered result about a third
+  smaller (7.7 → 5.2 GB on a 312 M-value cohort), and upload, read-back and parse all scale with
+  it. Choose it before building downstream steps, because changing it later is the same type
+  change as above.
+
+## Changes from 2.x
+
+- **`integer_ids`** (new, default off): `event_id` / `channel_id` as `int32` instead of `double`
+  (3.0.x always wrote `int32`; see Upgrading).
 - **New column `random_sequence`** (int32) in the per-event table: a seeded rank per file that
   reproduces `which.lines` sampling, so a sample can be taken downstream by filtering on it.
-- **Same values:** on 2.x's own unit test (`tests/test.json`, the same FCS zip) every value in
-  all four tables equals 2.x's expected output; only the types above and the new column differ.
+- **Same values and types:** on 2.x's own unit test (`tests/test.json`, the same FCS zip) every
+  value and column type in all four tables equals 2.x's expected output; only the new column differs.
+  `tests/test_2.json` is the same test with `integer_ids = true`.
 - **New properties:** `seed` (for `random_sequence` and `which.lines`) and `threads`.
 - **gRPC operator**, static image; needs a Tercen server with gRPC operator support.
 
@@ -38,7 +51,7 @@ it produces columns named from the data, so a downstream step can be planned bef
 
 ## Output (same as the R operator)
 
-- `gather_channels = true`: **Measurements** `event_id (int32)`, `channel_id (int32)`, `value` ⟕ **Observations**
+- `gather_channels = true`: **Measurements** `event_id`, `channel_id`, `value` ⟕ **Observations**
   (channels matching `ungather_pattern`, `event_id`, `filename`) ⟕ **Variables** (`channel_name`,
   `channel_description`, `channel_name_description`, `channel_id`), plus `FCS_summary.md`.
 - `gather_channels = false` (default): the wide table (one column per channel, `fileId`, `event_id`)
@@ -60,9 +73,12 @@ ignore.text.offset = TRUE, truncate_max_range = …)`: raw values, no `$PnE` lin
 | `truncate_max_range` | true | clamp values above `$PnR` |
 | `seed` | 42 | seed for the per-file event ranking (`random_sequence`, hence `which.lines`); ChaCha8, mixed with the file name; the R operator sampled unseeded |
 | `threads` | 0 | decode threads per file, 0 = all cores |
+| `integer_ids` | false | `event_id` / `channel_id` as `int32` instead of `double` (2.x wrote `double`, 3.0.x `int32`); see Upgrading |
 
 ## Differences from the R operator
 
+- `event_id` and `channel_id` are `double` as in R by default; `fileId` (wide) is `int32`, as R
+  wrote it.
 - Sampling is seeded and sampled rows keep file order (R: unseeded, random order).
 - Files flowCore rejects (offset disagreements, `$SPILLOVER` size mismatch, 24-bit integers,
   truncated files) are read; see `CLAUDE.md` for the conformance table.

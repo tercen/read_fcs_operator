@@ -48,6 +48,10 @@ pub struct Settings {
     pub seed: u64,
     /// Decode threads per file; 0 = rayon default.
     pub threads: usize,
+    /// `integer_ids`: write `event_id` / `channel_id` as int32 instead of double. Double (the
+    /// default) is what read_fcs 2.x (R) wrote, and Tercen identifies a column by name *and*
+    /// type, so a workflow built on 2.x breaks when the type changes under its saved factors.
+    pub integer_ids: bool,
     /// Files decoded concurrently in the planning pass. Peak memory is
     /// `in_flight × (events per file × channels × 8 B)`, so this — not the machine's core
     /// count — is what bounds it. The worker enforces a hard `--memory` limit taken from
@@ -64,6 +68,7 @@ impl Default for Settings {
             truncate_max_range: true,
             seed: 42,
             threads: 0,
+            integer_ids: false,
             in_flight: 4,
         }
     }
@@ -513,6 +518,11 @@ fn write_join_simple<W: Write>(
 }
 
 /// The whole `OperatorResult`, streamed to `out`. Returns bytes written.
+/// Column type of `event_id` / `channel_id` (see [`Settings::integer_ids`]).
+fn id_ty(s: &Settings) -> &'static str {
+    if s.integer_ids { "int32" } else { "double" }
+}
+
 pub fn write_operator_result<W: Write>(
     out: W,
     plan: &Plan,
@@ -523,6 +533,7 @@ pub fn write_operator_result<W: Write>(
     let opts = s.read_options();
     let mut w = TsonWriter::new(out)?;
     let gather = s.gather_channels;
+    let int_ids = s.integer_ids;
     let with_variables = gather;
     let with_comp = !plan.compensation.is_empty();
     let n_tables = (if with_variables { 4 } else { 3 }) + usize::from(with_comp);
@@ -540,11 +551,11 @@ pub fn write_operator_result<W: Write>(
         let cols = [
             ColSpec {
                 name: "event_id",
-                ty: "int32",
+                ty: id_ty(s),
             },
             ColSpec {
                 name: "channel_id",
-                ty: "int32",
+                ty: id_ty(s),
             },
             ColSpec {
                 name: "value",
@@ -553,16 +564,18 @@ pub fn write_operator_result<W: Write>(
         ];
         write_table_header(&mut w, main_name, n, &cols)?;
         let nc = plan.n_channels;
-        // The ids are int32: an event index and a channel index. They were doubles, mirroring
-        // the R operator's numeric columns, at 8 bytes each — a third of every gathered result
-        // (24.7 B/value measured on a 312 M-value cohort, 7.7 GB). int32 is the platform's
-        // ordinary integer type (`.ci`, `.ri`, `fileId` already use it) and every stage after
-        // the operator — upload, read-back, parse — scales with these bytes. Ranges are safe:
-        // `write_table_header` already refuses a table with more than i32::MAX rows, and the
-        // ids never exceed that count.
+        // The ids are an event index and a channel index. As doubles (the default, what the R
+        // operator wrote) they are 8 bytes each — a third of every gathered result (24.7 B/value
+        // measured on a 312 M-value cohort, 7.7 GB). `integer_ids` writes them as int32, the
+        // platform's ordinary integer type (`.ci`, `.ri`, `fileId` already use it): 16.6 B/value,
+        // 5.2 GB, and every stage after the operator — upload, read-back, parse — scales with
+        // these bytes. It is opt-in because Tercen matches a saved factor by name and type, so
+        // workflows built on read_fcs 2.x break when the type changes (3.0.x had int32 only).
+        // Ranges are safe either way: `write_table_header` refuses a table with more than
+        // i32::MAX rows, and the ids never exceed that count.
         // event_id: each id repeated nc times
         write_column_header(&mut w, &cols[0], n)?;
-        w.i32_list_header(n)?;
+        w.id_list_header(int_ids, n)?;
         {
             let mut buf: Vec<i32> = Vec::with_capacity(CHUNK);
             for e in 1..=plan.total_events {
@@ -570,15 +583,15 @@ pub fn write_operator_result<W: Write>(
                     buf.push(e as i32);
                 }
                 if buf.len() + nc > CHUNK {
-                    w.i32_chunk(&buf)?;
+                    w.id_chunk(int_ids, &buf)?;
                     buf.clear();
                 }
             }
-            w.i32_chunk(&buf)?;
+            w.id_chunk(int_ids, &buf)?;
         }
         // channel_id: 1..nc tiled
         write_column_header(&mut w, &cols[1], n)?;
-        w.i32_list_header(n)?;
+        w.id_list_header(int_ids, n)?;
         {
             let mut buf: Vec<i32> = Vec::with_capacity(CHUNK);
             for _ in 0..plan.total_events {
@@ -586,11 +599,11 @@ pub fn write_operator_result<W: Write>(
                     buf.push(c as i32);
                 }
                 if buf.len() + nc > CHUNK {
-                    w.i32_chunk(&buf)?;
+                    w.id_chunk(int_ids, &buf)?;
                     buf.clear();
                 }
             }
-            w.i32_chunk(&buf)?;
+            w.id_chunk(int_ids, &buf)?;
         }
         // value: second decode pass, row-major over gathered channels
         write_column_header(&mut w, &cols[2], n)?;
@@ -641,7 +654,7 @@ pub fn write_operator_result<W: Write>(
         });
         cols.push(ColSpec {
             name: "event_id",
-            ty: "int32",
+            ty: id_ty(s),
         });
         write_table_header(&mut w, main_name, n, &cols)?;
         // TSON columns are contiguous, so a wide column needs that channel from every file at
@@ -691,16 +704,16 @@ pub fn write_operator_result<W: Write>(
         }
         w.i32_list(&file_ids)?;
         write_column_header(&mut w, &cols[plan.all_names.len() + 1], n)?;
-        w.i32_list_header(n)?;
+        w.id_list_header(int_ids, n)?;
         let mut buf: Vec<i32> = Vec::with_capacity(CHUNK);
         for e in 1..=n {
             buf.push(e as i32);
             if buf.len() == CHUNK {
-                w.i32_chunk(&buf)?;
+                w.id_chunk(int_ids, &buf)?;
                 buf.clear();
             }
         }
-        w.i32_chunk(&buf)?;
+        w.id_chunk(int_ids, &buf)?;
     }
 
     // ---- Observations ----------------------------------------------------------------------
@@ -718,7 +731,7 @@ pub fn write_operator_result<W: Write>(
             .collect();
         cols.push(ColSpec {
             name: "event_id",
-            ty: "int32",
+            ty: id_ty(s),
         });
         cols.push(ColSpec {
             name: "random_sequence",
@@ -743,16 +756,16 @@ pub fn write_operator_result<W: Write>(
             }
         }
         write_column_header(&mut w, &cols[condx_names.len()], n)?;
-        w.i32_list_header(n)?;
+        w.id_list_header(int_ids, n)?;
         let mut buf: Vec<i32> = Vec::with_capacity(CHUNK.min(n));
         for e in 1..=n {
             buf.push(e as i32);
             if buf.len() == CHUNK {
-                w.i32_chunk(&buf)?;
+                w.id_chunk(int_ids, &buf)?;
                 buf.clear();
             }
         }
-        w.i32_chunk(&buf)?;
+        w.id_chunk(int_ids, &buf)?;
         // random_sequence: the event's rank within its file (see `fcs::event_ranks`).
         write_column_header(&mut w, &cols[condx_names.len() + 1], n)?;
         w.i32_list_header(n)?;
@@ -796,7 +809,7 @@ pub fn write_operator_result<W: Write>(
                 },
                 ColSpec {
                     name: "channel_id",
-                    ty: "int32",
+                    ty: id_ty(s),
                 },
             ]
         } else {
@@ -815,7 +828,7 @@ pub fn write_operator_result<W: Write>(
                 },
                 ColSpec {
                     name: "channel_id",
-                    ty: "int32",
+                    ty: id_ty(s),
                 },
             ]
         };
@@ -848,7 +861,10 @@ pub fn write_operator_result<W: Write>(
             )?;
         }
         write_column_header(&mut w, &cols[ci], n)?;
-        w.i32_list(&rows.iter().map(|r| r.channel_id as i32).collect::<Vec<_>>())?;
+        w.id_list(
+            int_ids,
+            &rows.iter().map(|r| r.channel_id as i32).collect::<Vec<_>>(),
+        )?;
     } else {
         tracing::info!(
             "gather_channels = false: the channel table is not uploaded as a project CSV in v0.1 (R uploads 'Channel-Descriptions-…')"
@@ -1131,6 +1147,158 @@ mod tests {
             }
         }
         (emitted, dynamic)
+    }
+
+    /// (table, column, declared type, numeric values as (is the list int32?, values)).
+    type ResultColumn = (String, String, String, Option<(bool, Vec<f64>)>);
+
+    /// Every column of the fixture's result as (table, column, declared type, values), the
+    /// values widened to f64 (strings are left out: only numeric columns are compared).
+    fn result_columns(gathered: bool, integer_ids: bool) -> Vec<ResultColumn> {
+        let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("tests");
+        let dir = tempfile::tempdir().unwrap();
+        crate::download::extract_fcs_entries(&root.join("fcs_test.zip"), dir.path()).unwrap();
+        let files: Vec<std::path::PathBuf> = std::fs::read_dir(dir.path())
+            .unwrap()
+            .map(|e| e.unwrap().path())
+            .collect();
+        let s = Settings {
+            gather_channels: gathered,
+            integer_ids,
+            ..Settings::default()
+        };
+        let plan = plan(&files, &s, &Reporter::silent()).unwrap();
+        let mut buf = Vec::new();
+        write_operator_result(&mut buf, &plan, &s, "fcs_test.zip", &Reporter::silent()).unwrap();
+        let rustson::Value::MAP(m) = rustson::decode_bytes(&buf).unwrap() else {
+            panic!("result is not a map")
+        };
+        let rustson::Value::LST(tables) = &m["tables"] else {
+            panic!("no tables")
+        };
+        let mut out = Vec::new();
+        for t in tables {
+            let rustson::Value::MAP(t) = t else { panic!() };
+            let rustson::Value::MAP(p) = &t["properties"] else {
+                panic!()
+            };
+            let rustson::Value::STR(table) = &p["name"] else {
+                panic!()
+            };
+            let rustson::Value::LST(cols) = &t["columns"] else {
+                panic!()
+            };
+            for c in cols {
+                let rustson::Value::MAP(c) = c else { panic!() };
+                let (rustson::Value::STR(name), rustson::Value::STR(ty)) = (&c["name"], &c["type"])
+                else {
+                    panic!()
+                };
+                // (is the list int32?, values)
+                let values = match &c["values"] {
+                    rustson::Value::LSTF64(x) => Some((false, x.clone())),
+                    rustson::Value::LSTI32(x) => {
+                        Some((true, x.iter().map(|&v| f64::from(v)).collect()))
+                    }
+                    _ => None,
+                };
+                out.push((table.clone(), name.clone(), ty.clone(), values));
+            }
+        }
+        out
+    }
+
+    /// `integer_ids` changes the type of `event_id` / `channel_id` and nothing else: double by
+    /// default, as read_fcs 2.x (R) wrote them, so workflows built on 2.x keep resolving their
+    /// saved factors (Tercen matches a factor by name and type); int32 on request. The values,
+    /// every other column, and the int32 `fileId` / `random_sequence` are the same either way.
+    #[test]
+    fn id_columns_follow_integer_ids() {
+        for gathered in [true, false] {
+            let dbl = result_columns(gathered, false);
+            let int = result_columns(gathered, true);
+            assert_eq!(dbl.len(), int.len());
+            let mut ids_seen = 0;
+            for (d, i) in dbl.iter().zip(&int) {
+                assert_eq!((&d.0, &d.1), (&i.0, &i.1), "column order differs");
+                let what = format!("gather_channels = {gathered}: {}.{}", d.0, d.1);
+                if d.1 == "event_id" || d.1 == "channel_id" {
+                    ids_seen += 1;
+                    assert_eq!(d.2, "double", "{what}: default type");
+                    assert_eq!(i.2, "int32", "{what}: integer_ids type");
+                    let (d_int, d_vals) = d.3.as_ref().unwrap();
+                    let (i_int, i_vals) = i.3.as_ref().unwrap();
+                    assert!(
+                        !d_int && *i_int,
+                        "{what}: list type must match the declared type"
+                    );
+                    assert_eq!(d_vals, i_vals, "{what}: values differ");
+                } else {
+                    assert_eq!(d.2, i.2, "{what}: type must not depend on integer_ids");
+                    assert_eq!(d.3, i.3, "{what}: values must not depend on integer_ids");
+                    if d.1 == "fileId" || d.1 == "random_sequence" {
+                        assert_eq!(d.2, "int32", "{what}");
+                    }
+                }
+                if let Some((is_int, _)) = &d.3 {
+                    assert_eq!(
+                        *is_int,
+                        d.2 == "int32",
+                        "{what}: list type vs declared type"
+                    );
+                }
+            }
+            // gathered: Measurements event_id + channel_id, Observations event_id, Variables
+            // channel_id; wide: main table event_id, Observations event_id
+            assert_eq!(
+                ids_seen,
+                if gathered { 4 } else { 2 },
+                "gather_channels = {gathered}"
+            );
+        }
+    }
+
+    /// The platform predicts a not-yet-run step's columns, with their types, from operator.json
+    /// (`DataStep.getPredictedAttributes`), and a downstream factor built on that prediction keeps
+    /// the type. So each declared type must be what the default settings emit. (The spec cannot
+    /// describe `integer_ids = true`: `_matchesCondition` evaluates one property per condition.)
+    #[test]
+    fn operator_spec_declares_the_default_types() {
+        let manifest = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("operator.json");
+        let spec: serde_json::Value =
+            serde_json::from_str(&std::fs::read_to_string(&manifest).unwrap()).unwrap();
+        let alternatives = spec["operatorSpec"]["outputSpecsV2"][0]["alternatives"]
+            .as_array()
+            .unwrap();
+        for gathered in [true, false] {
+            let want = format!("gather_channels = {gathered}");
+            let alt = alternatives
+                .iter()
+                .find(|a| a["condition"].as_str().unwrap_or("").starts_with(&want))
+                .unwrap();
+            let cond = alt["condition"].as_str().unwrap();
+            assert!(
+                !cond.contains("integer_ids"),
+                "condition `{cond}`: the platform matches the first property it finds in the text"
+            );
+            let emitted: std::collections::HashMap<String, String> =
+                result_columns(gathered, false)
+                    .into_iter()
+                    .map(|(_, name, ty, _)| (name, ty))
+                    .collect();
+            for r in alt["joinSpec"]["joinOperators"].as_array().unwrap() {
+                for a in r["rightRelation"]["attributes"].as_array().unwrap() {
+                    let name = a["name"].as_str().unwrap();
+                    if let Some(ty) = emitted.get(name) {
+                        assert_eq!(
+                            a["type"].as_str().unwrap(),
+                            ty,
+                            "{want}: operator.json declares `{name}` with the wrong type"
+                        );
+                    }
+                }
+            }
+        }
     }
 
     /// `operator.json`'s `operatorSpec` is hand-written and says what this module will produce.

@@ -1,0 +1,41 @@
+{
+  "kind": "OperatorUnitTest",
+  "name": "test_2",
+  "namespace": "ds0",
+  "inputDataUri": "test_1_in.csv",
+  "outputDataUri": [
+    "test_2_out_1.csv",
+    "test_2_out_3.csv",
+    "test_2_out_2.csv",
+    "test_2_out_4.csv"
+  ],
+  "columns": [
+    "documentId"
+  ],
+  "rows": [],
+  "colors": [],
+  "labels": [],
+  "yAxis": "",
+  "xAxis": "",
+  "generatedOn": "09/19/2026 01:45:00 AM 2026",
+  "version": "",
+  "propertyValues": [
+    {
+      "kind": "PropertyValue",
+      "name": "gather_channels",
+      "value": "true"
+    },
+    {
+      "kind": "PropertyValue",
+      "name": "integer_ids",
+      "value": "true"
+    }
+  ],
+  "inputFileUris": [
+    "fcs_test.zip"
+  ],
+  "absTol": 1e-06,
+  "skipColumns": [
+    ".content"
+  ]
+}

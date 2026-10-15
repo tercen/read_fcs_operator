@@ -377,9 +377,11 @@ parity comparison had to treat equal infinities as equal.
 Fixture set: `~/Downloads/FlowRepository_FR-FCM-ZZZ4_files.zip` (public; extract to `fixtures/flowrepo/`, git-ignored).
 
 
-## Deviation from the R operator: int32 ids (0.1.4)
+## Id types: double by default, int32 on request (0.1.4 → 3.1.0)
 
-`event_id` and `channel_id` are `int32`, not the R operator's `double` — a third of every gathered result, and every stage after the operator scales with it (tercen/sci#1659). Both sides of each join carry the same type. Values are identical; the R-parity test reads either type.
+0.1.4 – 3.0.x wrote `event_id` and `channel_id` as `int32`, not the R operator's `double`: a third of every gathered result, and every stage after the operator scales with it (tercen/sci#1659). That broke every workflow built on read_fcs 2.x: Tercen identifies a column by name **and** type (`Factor ==`, the engine's `Attribute` eq), saved factors keep the type they were built with, and nothing refreshes it, so a stale `event_id:double` factor fails the query (`bad relation`, `get -- attribute not found`) or prunes a join branch. Engine joins of `int32` to `double` are an error too.
+
+3.1.0 makes it a property: `integer_ids` (default false → `double`, as 2.x). `id_ty()` / `TsonWriter::id_*` are the only places the type is decided; `fileId` and `random_sequence` stay `int32`. Tests: `id_columns_follow_integer_ids` (types and values in both modes), `operator_spec_declares_the_default_types` (operator.json must declare the default types — the platform predicts a step's columns from it, and `DataStep._matchesCondition` evaluates one property per condition, so the spec cannot describe `integer_ids = true`; never name `integer_ids` in a condition). Platform tests: `tests/test.json` (double, 2.x's own sidecar types) and `tests/test_2.json` (`integer_ids = true`, int32 sidecars). When regenerating `test_1_out_*.csv`, copy them to `test_2_out_*.csv`; only the `.schema` sidecars differ.
 
 
 ## `random_sequence` and `which.lines` are one draw (0.1.5)
